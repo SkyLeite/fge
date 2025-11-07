@@ -1,0 +1,8 @@
+[package]
+name = "fge_core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+bevy = { version = "0.17.2", features = ["dynamic_linking"] }
+fge_models = { path = "../fge_models" }
