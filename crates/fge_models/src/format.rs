@@ -83,7 +83,13 @@ pub enum Animation {
 /// An animation that consists of a sequence of 2D sprites
 #[derive(Serialize, Deserialize)]
 pub struct SpriteAnimation {
-    pub frames: Vec<Sprite>,
+    pub frames: Vec<Frame>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Frame {
+    pub sprite: Sprite,
+    pub duration: u32,
 }
 
 /// A single frame of an animation

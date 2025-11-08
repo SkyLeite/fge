@@ -1,4 +1,4 @@
 mod format;
-mod serde;
+pub mod serde;
 
 pub use format::*;
