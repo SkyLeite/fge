@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash};
+use std::{collections::HashMap, hash::Hash, path::PathBuf, str::FromStr};
 
 use serde::{Deserialize, Serialize};
 
@@ -21,7 +21,28 @@ pub struct Character {
     /// The character's animations
     pub animations: HashMap<AnimationID, Animation>,
 
+    /// A list of spritesheets to be used for animations and effects
+    pub spritesheets: HashMap<SpritesheetID, Spritesheet>,
+
     pub max_health: u32,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Spritesheet {
+    /// Path to file containing the spritesheet
+    pub file: PathBuf,
+
+    /// Amount of columns in the spritesheet
+    pub columns: u16,
+
+    /// Amount of rows in the spritesheet
+    pub rows: u16,
+
+    /// Spritesheet width in pixels
+    pub width: u16,
+
+    /// Spritesheet height in pixels
+    pub height: u16,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -42,8 +63,29 @@ pub struct State {
 #[derive(Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StateID(String);
 
-#[derive(Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AnimationID(String);
+
+impl From<&str> for AnimationID {
+    fn from(value: &str) -> Self {
+        Self(value.to_string())
+    }
+}
+
+#[derive(Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
+pub struct SpritesheetID(pub String);
+
+impl From<&str> for SpritesheetID {
+    fn from(value: &str) -> Self {
+        Self(value.to_string())
+    }
+}
+
+impl From<String> for SpritesheetID {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
 
 #[derive(Serialize, Deserialize)]
 pub enum Action {
@@ -86,9 +128,15 @@ pub struct SpriteAnimation {
     pub frames: Vec<Frame>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Frame {
-    pub sprite: Sprite,
+    /// ID of the spritesheet to use for this frame.
+    pub sheet: SpritesheetID,
+
+    /// Index of the sprite in the spritesheet
+    pub cell: (u16, u16),
+
+    /// Amount of in-game frames to show this animation frame for
     pub duration: u32,
 }
 

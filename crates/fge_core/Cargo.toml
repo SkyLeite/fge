@@ -5,4 +5,8 @@ edition = "2024"
 
 [dependencies]
 bevy = { version = "0.17.2", features = ["dynamic_linking"] }
+bevy_spritesheet_animation = "5.0.0"
 fge_models = { path = "../fge_models" }
+
+[dev-dependencies]
+rstest = "0.26.1"

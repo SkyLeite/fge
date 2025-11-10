@@ -1,22 +1,17 @@
-use std::path::Path;
-
 use bevy::prelude::*;
-use fge_models;
+use bevy_spritesheet_animation::prelude::*;
 
 mod character;
+mod sequence;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
-        .add_systems(Startup, setup)
+        .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
+        .add_plugins(SpritesheetAnimationPlugin)
+        .add_systems(Startup, character::spawn)
         .add_systems(Update, update)
+        .add_systems(FixedUpdate, (character::set_hitboxes))
         .run();
-}
-
-fn setup(mut commands: Commands) {
-    commands.spawn(Camera2d::default());
-
-    let character = fge_models::serde::from_file(Path::new("./data/character.lua")).unwrap();
 }
 
 fn update() {}

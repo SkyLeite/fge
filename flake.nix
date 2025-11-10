@@ -7,18 +7,31 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, rust-overlay, flake-utils, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      rust-overlay,
+      flake-utils,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs { inherit system overlays; };
         rustToolchain = pkgs.rust-bin.nightly.latest.default.override {
-          extensions = [ "rust-src" "rust-analyzer" "clippy" ];
+          extensions = [
+            "rust-src"
+            "rust-analyzer"
+            "clippy"
+          ];
         };
-      in {
-        devShells.default = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ pkg-config ];
+      in
+      {
+        devShells.default = pkgs.mkShell rec {
           buildInputs = with pkgs; [
+            pkg-config
             rustToolchain
             clang
             llvmPackages_latest.bintools
@@ -34,6 +47,8 @@
             glibc.dev
             glib.dev
           ];
+
+          nativeBuildInputs = with pkgs; [ pkg-config ] ++ buildInputs;
 
           shellHook = ''
             export PATH=$PATH:''${CARGO_HOME:-~/.cargo}/bin
@@ -52,5 +67,6 @@
             echo "Bevy development environment loaded!"
           '';
         };
-      });
+      }
+    );
 }
