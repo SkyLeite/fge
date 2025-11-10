@@ -1,6 +1,9 @@
 use std::{collections::HashMap, path::Path};
 
-use crate::sequence::Sequence;
+use crate::{
+    animation_player::{AnimationPlayer, Animations, Spritesheets},
+    sequence::Sequence,
+};
 use bevy::prelude::*;
 use bevy_spritesheet_animation::prelude::*;
 use fge_models::{AnimationID, Frame, SpritesheetID};
@@ -11,41 +14,12 @@ pub struct Health(pub u32);
 #[derive(Component)]
 pub struct Position(pub Vec2);
 
-#[derive(Default, Component)]
-pub struct Animations(HashMap<AnimationID, Sequence>);
-
-impl Animations {
-    pub fn insert(&mut self, id: AnimationID, sequence: Sequence) {
-        self.0.insert(id, sequence);
-    }
-
-    pub fn get(&self, id: AnimationID) -> Option<&Sequence> {
-        self.0.get(&id)
-    }
-}
-
-#[derive(Default, Component)]
-pub struct Spritesheets(HashMap<SpritesheetID, Sprite>);
-
-impl Spritesheets {
-    pub fn insert(&mut self, id: SpritesheetID, sprite: Sprite) {
-        self.0.insert(id, sprite);
-    }
-
-    pub fn get(&self, id: SpritesheetID) -> Option<&Sprite> {
-        self.0.get(&id)
-    }
-}
-
 #[derive(Bundle)]
 pub struct CharacterBundle {
     pub character_marker: Character,
     pub health: Health,
     pub position: Position,
-    pub animations: Animations,
-    pub spritesheets: Spritesheets,
-    pub sprite: Sprite,
-    pub spritesheet_animation: SpritesheetAnimation,
+    pub animation_player: AnimationPlayer,
 }
 
 #[derive(Component)]
@@ -104,16 +78,12 @@ pub fn spawn(
         spritesheets.insert(sheet_id, sprite);
     }
 
-    let s = spritesheets.get("idle".into()).unwrap();
-    let sequence = animation_atlas.get("standing".into()).unwrap();
+    let animation_player = AnimationPlayer::new(animation_atlas, spritesheets);
 
     commands.spawn(CharacterBundle {
         health: Health(character.max_health),
         position: Position(Vec2::new(0.0, 0.0)),
-        spritesheet_animation: SpritesheetAnimation::new(sequence.animation.clone()),
-        animations: animation_atlas,
-        sprite: s.clone(),
-        spritesheets,
+        animation_player,
         character_marker: Character {},
     });
 }

@@ -60,10 +60,10 @@ pub struct State {
     pub commands: Vec<Command>,
 }
 
-#[derive(Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StateID(String);
 
-#[derive(Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AnimationID(String);
 
 impl From<&str> for AnimationID {
@@ -72,7 +72,7 @@ impl From<&str> for AnimationID {
     }
 }
 
-#[derive(Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct SpritesheetID(pub String);
 
 impl From<&str> for SpritesheetID {
@@ -125,7 +125,27 @@ pub enum Animation {
 /// An animation that consists of a sequence of 2D sprites
 #[derive(Serialize, Deserialize)]
 pub struct SpriteAnimation {
+    /// List of frames to be shown
     pub frames: Vec<Frame>,
+
+    /// Default collision box to use for all Frames. This can be overriden per-frame.
+    pub default_collision_box: Option<Box>,
+}
+
+#[derive(Serialize, Deserialize)]
+/// A generic Box, used to represent collision, hit and hurtboxes.
+pub struct Box {
+    /// X position of the top-left point
+    pub x: u32,
+
+    /// Y position of the top-left point
+    pub y: u32,
+
+    /// Width of the box, in pixels
+    pub w: u32,
+
+    /// Height of the box, in pixels
+    pub h: u32,
 }
 
 #[derive(Serialize, Deserialize, Clone)]

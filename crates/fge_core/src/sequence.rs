@@ -12,16 +12,17 @@ impl Sequence {
         let mut count = 1;
 
         for frame in frames {
+            count += frame.duration;
+
             if index <= count {
                 return Some(frame);
             }
-
-            count += frame.duration;
         }
 
         None
     }
 
+    /// Given an animation frame number, returns the Frame of this sequence that corresponds to it.
     pub fn get_frame(&self, index: u32) -> Option<&Frame> {
         Sequence::get_frame_p(&self.frames, index)
     }
@@ -37,12 +38,12 @@ mod test {
     #[rstest]
     #[case(0, [2, 2, 2, 2], Some("id-0"))]
     #[case(1, [2, 2, 2, 2], Some("id-0"))]
-    #[case(3, [2, 2, 2, 2], Some("id-1"))]
-    #[case(4, [2, 2, 2, 2], Some("id-2"))]
-    #[case(5, [2, 2, 2, 2], Some("id-2"))]
-    #[case(6, [2, 2, 2, 2], Some("id-3"))]
-    #[case(7, [2, 2, 2, 2], Some("id-3"))]
-    #[case(8, [2, 2, 2, 2], None)]
+    #[case(3, [2, 2, 2, 2], Some("id-0"))]
+    #[case(4, [2, 2, 2, 2], Some("id-1"))]
+    #[case(5, [2, 2, 2, 2], Some("id-1"))]
+    #[case(6, [2, 2, 2, 2], Some("id-2"))]
+    #[case(7, [2, 2, 2, 2], Some("id-2"))]
+    #[case(8, [2, 2, 2, 2], Some("id-3"))]
     fn get_frame_returns_correctly_for_index(
         #[case] index: u32,
         #[case] frame_durations: [u32; 4],
