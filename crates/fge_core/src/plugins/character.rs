@@ -1,25 +1,24 @@
-use std::{collections::HashMap, path::Path};
+use std::path::Path;
 
-use crate::{
-    animation_player::{AnimationPlayer, Animations, Spritesheets},
-    sequence::Sequence,
-};
-use bevy::prelude::*;
+use crate::prelude::*;
+use crate::sequence::Sequence;
 use bevy_spritesheet_animation::prelude::*;
-use fge_models::{AnimationID, Frame, SpritesheetID};
 
-#[derive(Component)]
-pub struct Health(pub u32);
+pub struct CharacterPlugin;
 
-#[derive(Component)]
-pub struct Position(pub Vec2);
+impl Plugin for CharacterPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn)
+            .add_systems(FixedUpdate, set_hitboxes);
+    }
+}
 
 #[derive(Bundle)]
 pub struct CharacterBundle {
     pub character_marker: Character,
-    pub health: Health,
-    pub position: Position,
-    pub animation_player: AnimationPlayer,
+    pub health: crate::components::Health,
+    pub position: crate::components::Position,
+    pub animation_player: crate::plugins::animation_player::AnimationPlayer,
 }
 
 #[derive(Component)]
@@ -78,11 +77,12 @@ pub fn spawn(
         spritesheets.insert(sheet_id, sprite);
     }
 
-    let animation_player = AnimationPlayer::new(animation_atlas, spritesheets);
+    let animation_player =
+        crate::plugins::animation_player::AnimationPlayer::new(animation_atlas, spritesheets);
 
     commands.spawn(CharacterBundle {
-        health: Health(character.max_health),
-        position: Position(Vec2::new(0.0, 0.0)),
+        health: crate::components::Health(character.max_health),
+        position: crate::components::Position(Vec2::new(0.0, 0.0)),
         animation_player,
         character_marker: Character {},
     });

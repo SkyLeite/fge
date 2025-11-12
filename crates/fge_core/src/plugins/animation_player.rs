@@ -1,9 +1,6 @@
-use std::collections::HashMap;
-
-use crate::sequence::Sequence;
-use bevy::prelude::*;
+use crate::prelude::*;
 use bevy_spritesheet_animation::{plugin::AnimationSystemSet, prelude::*};
-use fge_models::{AnimationID, SpritesheetID};
+use fge_models::AnimationID;
 
 #[derive(Component)]
 #[require(Sprite)]
@@ -33,37 +30,12 @@ impl AnimationPlayer {
     pub fn set_animation(animation_id: AnimationID) {}
 }
 
-#[derive(Default, Component)]
-pub struct Animations(HashMap<AnimationID, Sequence>);
+pub struct AnimationPlayerPlugin;
 
-impl Animations {
-    pub fn insert(&mut self, id: AnimationID, sequence: Sequence) {
-        self.0.insert(id, sequence);
-    }
-
-    pub fn get(&self, id: &AnimationID) -> Option<&Sequence> {
-        self.0.get(&id)
-    }
-}
-
-#[derive(Default, Component)]
-pub struct Spritesheets(HashMap<SpritesheetID, Sprite>);
-
-impl Spritesheets {
-    pub fn insert(&mut self, id: SpritesheetID, sprite: Sprite) {
-        self.0.insert(id, sprite);
-    }
-
-    pub fn get(&self, id: &SpritesheetID) -> Option<&Sprite> {
-        self.0.get(&id)
-    }
-}
-
-pub struct AnimationPlugin;
-
-impl Plugin for AnimationPlugin {
+impl Plugin for AnimationPlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(FixedUpdate, create_spritesheet_animation)
+        app.add_plugins(SpritesheetAnimationPlugin)
+            .add_systems(FixedUpdate, create_spritesheet_animation)
             .add_systems(PostUpdate, set_sprite.before(AnimationSystemSet));
     }
 }
