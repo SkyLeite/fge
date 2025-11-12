@@ -30,7 +30,7 @@ pub fn spawn(
     mut animations: ResMut<Assets<Animation>>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    commands.spawn(Camera2d::default());
+    commands.spawn(Camera2d);
 
     let character = fge_models::serde::from_file(Path::new("./data/character.lua")).unwrap();
     let mut animation_atlas = Animations::default();
@@ -66,7 +66,7 @@ pub fn spawn(
                     };
                     animation_atlas.insert(id.clone(), sequence);
                 }
-                fge_models::Animation::Model(model_animation) => todo!(),
+                fge_models::Animation::Model(_model_animation) => todo!(),
             }
         }
 
@@ -90,6 +90,6 @@ pub fn spawn(
 
 pub fn set_hitboxes(characters_query: Query<&SpritesheetAnimation, With<Character>>) {
     for animation in characters_query {
-        let progress = animation.progress;
+        let _progress = animation.progress;
     }
 }

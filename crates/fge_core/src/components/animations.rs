@@ -13,6 +13,6 @@ impl Animations {
     }
 
     pub fn get(&self, id: &AnimationID) -> Option<&Sequence> {
-        self.0.get(&id)
+        self.0.get(id)
     }
 }

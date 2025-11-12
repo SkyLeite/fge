@@ -1,4 +1,4 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Health(pub u32);
+pub struct Health(#[allow(unused)] pub u32);

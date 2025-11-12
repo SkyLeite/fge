@@ -26,8 +26,6 @@ impl AnimationPlayer {
             .get(&self.active_animation_id)
             .expect("Invalid active_animation_id")
     }
-
-    pub fn set_animation(animation_id: AnimationID) {}
 }
 
 pub struct AnimationPlayerPlugin;

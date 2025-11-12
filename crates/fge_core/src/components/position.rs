@@ -1,4 +1,4 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
-pub struct Position(pub Vec2);
+pub struct Position(#[allow(unused)] pub Vec2);

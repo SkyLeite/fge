@@ -12,6 +12,6 @@ impl Spritesheets {
     }
 
     pub fn get(&self, id: &SpritesheetID) -> Option<&Sprite> {
-        self.0.get(&id)
+        self.0.get(id)
     }
 }
