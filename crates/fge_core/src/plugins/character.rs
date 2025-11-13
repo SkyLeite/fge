@@ -114,10 +114,10 @@ pub fn set_hitboxes(
         ),
         With<Character>,
     >,
-    mut child_query: Query<(&mut Transform), With<CollisionBox>>,
+    mut child_query: Query<&mut Transform , With<CollisionBox>>,
 ) {
     for (children, player, animation) in characters_query {
-        let progress = animation.progress;
+        let _progress = animation.progress;
 
         let sequence = player.current_sequence();
 

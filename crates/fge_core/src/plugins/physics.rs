@@ -1,4 +1,4 @@
-use crate::{plugins::character::Character, prelude::*};
+use crate::prelude::*;
 use bevy_rapier2d::prelude::*;
 
 pub struct PhysicsPlugin;
