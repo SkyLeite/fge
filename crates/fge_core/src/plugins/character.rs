@@ -16,7 +16,7 @@ impl Plugin for CharacterPlugin {
 
 #[derive(Bundle)]
 pub struct CharacterBundle {
-    pub character_marker: Character,
+    pub character_data: Character,
     pub health: crate::components::Health,
     pub position: crate::components::Position,
     pub animation_player: crate::plugins::animation_player::AnimationPlayer,
@@ -24,7 +24,7 @@ pub struct CharacterBundle {
 
 #[derive(Component)]
 #[require(Position, RigidBody::Dynamic, Transform, GravityScale)]
-pub struct Character;
+pub struct Character(#[allow(unused)] fge_models::Character);
 
 pub fn spawn(
     mut commands: Commands,
@@ -38,7 +38,7 @@ pub fn spawn(
     let mut animation_atlas = Animations::default();
     let mut spritesheets = Spritesheets::default();
 
-    for (sheet_id, sheet) in character.spritesheets {
+    for (sheet_id, sheet) in &character.spritesheets {
         let image = assets.load(sheet.file.clone());
 
         let spritesheet = Spritesheet::new(&image, sheet.columns as usize, sheet.rows as usize);
@@ -77,7 +77,7 @@ pub fn spawn(
             .with_size_hint(sheet.width as u32, sheet.height as u32)
             .sprite(&mut atlas_layouts);
 
-        spritesheets.insert(sheet_id, sprite);
+        spritesheets.insert(sheet_id.clone(), sprite);
     }
 
     let animation_player =
@@ -88,7 +88,7 @@ pub fn spawn(
             health: crate::components::Health(character.max_health),
             position: crate::components::Position::default(),
             animation_player,
-            character_marker: Character {},
+            character_data: Character(character),
         })
         .with_child((
             CollisionBox,
