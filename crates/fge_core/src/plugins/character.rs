@@ -2,6 +2,7 @@ use std::path::Path;
 
 use crate::prelude::*;
 use crate::sequence::Sequence;
+use bevy_rapier2d::prelude::*;
 use bevy_spritesheet_animation::prelude::*;
 
 pub struct CharacterPlugin;
@@ -9,7 +10,7 @@ pub struct CharacterPlugin;
 impl Plugin for CharacterPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn)
-            .add_systems(FixedUpdate, set_hitboxes);
+            .add_systems(FixedUpdate, (set_hitboxes, update_position));
     }
 }
 
@@ -22,6 +23,7 @@ pub struct CharacterBundle {
 }
 
 #[derive(Component)]
+#[require(Position, RigidBody::Dynamic, Transform, GravityScale)]
 pub struct Character;
 
 pub fn spawn(
@@ -62,6 +64,7 @@ pub fn spawn(
                     let animation_handle = animations.add(animation);
                     let sequence = Sequence {
                         animation: animation_handle,
+                        default_collision_box: sprite_animation.default_collision_box.clone(),
                         frames: sprite_animation.frames.clone(),
                     };
                     animation_atlas.insert(id.clone(), sequence);
@@ -80,16 +83,56 @@ pub fn spawn(
     let animation_player =
         crate::plugins::animation_player::AnimationPlayer::new(animation_atlas, spritesheets);
 
-    commands.spawn(CharacterBundle {
-        health: crate::components::Health(character.max_health),
-        position: crate::components::Position(Vec2::new(0.0, 0.0)),
-        animation_player,
-        character_marker: Character {},
-    });
+    commands
+        .spawn(CharacterBundle {
+            health: crate::components::Health(character.max_health),
+            position: crate::components::Position::default(),
+            animation_player,
+            character_marker: Character {},
+        })
+        .with_child((
+            CollisionBox,
+            Collider::cuboid(1.0, 1.0),
+            Transform::from_xyz(0.0, 0.0, 0.0),
+        ));
 }
 
-pub fn set_hitboxes(characters_query: Query<&SpritesheetAnimation, With<Character>>) {
-    for animation in characters_query {
-        let _progress = animation.progress;
+pub fn update_position(query: Query<(&mut Transform, &Position), Changed<Position>>) {
+    for (mut transform, position) in query {
+        transform.translation.x = position.0.x as f32;
+        transform.translation.y = position.0.y as f32;
+    }
+}
+
+pub fn set_hitboxes(
+    mut commands: Commands,
+    characters_query: Query<
+        (
+            &Children,
+            &crate::plugins::animation_player::AnimationPlayer,
+            &SpritesheetAnimation,
+        ),
+        With<Character>,
+    >,
+    mut child_query: Query<(&mut Transform), With<CollisionBox>>,
+) {
+    for (children, player, animation) in characters_query {
+        let progress = animation.progress;
+
+        let sequence = player.current_sequence();
+
+        if let Some(collision_box) = &sequence.default_collision_box {
+            for child in children.iter() {
+                let mut transform = child_query.get_mut(child).unwrap();
+                transform.translation.x = collision_box.x as f32;
+                transform.translation.y = collision_box.y as f32;
+
+                commands.entity(child).remove::<Collider>();
+                commands.entity(child).insert(Collider::cuboid(
+                    (collision_box.w / 2) as f32,
+                    (collision_box.h / 2) as f32,
+                ));
+            }
+        }
     }
 }

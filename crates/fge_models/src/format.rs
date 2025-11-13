@@ -123,18 +123,18 @@ pub enum Animation {
 }
 
 /// An animation that consists of a sequence of 2D sprites
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct SpriteAnimation {
     /// List of frames to be shown
     pub frames: Vec<Frame>,
 
     /// Default collision box to use for all Frames. This can be overriden per-frame.
-    pub default_collision_box: Option<Box>,
+    pub default_collision_box: Option<Square>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 /// A generic Box, used to represent collision, hit and hurtboxes.
-pub struct Box {
+pub struct Square {
     /// X position of the top-left point
     pub x: u32,
 

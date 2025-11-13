@@ -1,9 +1,10 @@
 use bevy::prelude::*;
 use bevy_spritesheet_animation::prelude::Animation;
-use fge_models::Frame;
+use fge_models::{Frame, Square};
 
 pub struct Sequence {
     pub animation: Handle<Animation>,
+    pub default_collision_box: Option<Square>,
     pub frames: Vec<Frame>,
 }
 

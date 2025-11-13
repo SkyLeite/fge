@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 bevy = { version = "0.17.2", features = ["dynamic_linking"] }
+bevy_rapier2d = { git = "https://github.com/Deniskore/bevy_rapier.git", branch = "bevy-0.17" }
 bevy_spritesheet_animation = "5.0.0"
 fge_models = { path = "../fge_models" }
 

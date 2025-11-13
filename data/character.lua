@@ -20,8 +20,8 @@ return {
                 default_collision_box = {
                     x = 0,
                     y = 0,
-                    w = 10,
-                    h = 10
+                    w = 30,
+                    h = 100
                 },
                 frames = {
                     { sheet = "idle", cell = { 0, 0 },  duration = 4 },

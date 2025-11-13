@@ -14,6 +14,7 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(AnimationPlayerPlugin)
         .add_plugins(CharacterPlugin)
+        .add_plugins(PhysicsPlugin)
         .add_systems(Update, update)
         .run();
 }
