@@ -46,9 +46,15 @@
             wayland
             glibc.dev
             glib.dev
+            sccache
           ];
 
-          nativeBuildInputs = with pkgs; [ pkg-config ] ++ buildInputs;
+          nativeBuildInputs =
+            with pkgs;
+            [
+              pkg-config
+            ]
+            ++ buildInputs;
 
           shellHook = ''
             export PATH=$PATH:''${CARGO_HOME:-~/.cargo}/bin
@@ -64,6 +70,7 @@
             export LIBCLANG_PATH="${pkgs.llvmPackages_latest.libclang.lib}/lib"
             export BINDGEN_EXTRA_CLANG_ARGS="-I${pkgs.glibc.dev}/include -I${pkgs.llvmPackages_latest.libclang.lib}/lib/clang/${pkgs.llvmPackages_latest.libclang.version}/include -I${pkgs.glib.dev}/include/glib-2.0 -I${pkgs.glib.out}/lib/glib-2.0/include/"
             export RUSTFLAGS="-C link-arg=-fuse-ld=lld"
+            export RUSTC_WRAPPER="${pkgs.lib.getExe pkgs.sccache}"
             echo "Bevy development environment loaded!"
           '';
         };
