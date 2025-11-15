@@ -10,7 +10,7 @@ pub struct CharacterPlugin;
 impl Plugin for CharacterPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn)
-            .add_systems(FixedUpdate, (set_hitboxes, update_position));
+            .add_systems(FixedUpdate, (set_collision_boxes, update_position));
     }
 }
 
@@ -104,6 +104,39 @@ pub fn update_position(query: Query<(&mut Transform, &Position), Changed<Positio
     }
 }
 
+pub fn set_collision_boxes(
+    mut commands: Commands,
+    characters_query: Query<
+        (
+            &Children,
+            &crate::plugins::animation_player::AnimationPlayer,
+            &SpritesheetAnimation,
+        ),
+        With<Character>,
+    >,
+    mut child_query: Query<&mut Transform, With<CollisionBox>>,
+) {
+    for (children, player, animation) in characters_query {
+        let _progress = animation.progress;
+
+        let sequence = player.current_sequence();
+
+        if let Some(collision_box) = &sequence.default_collision_box {
+            for child in children.iter() {
+                let mut transform = child_query.get_mut(child).unwrap();
+                transform.translation.x = collision_box.x as f32;
+                transform.translation.y = collision_box.y as f32;
+
+                commands.entity(child).remove::<Collider>();
+                commands.entity(child).insert(Collider::cuboid(
+                    (collision_box.w / 2) as f32,
+                    (collision_box.h / 2) as f32,
+                ));
+            }
+        }
+    }
+}
+
 pub fn set_hitboxes(
     mut commands: Commands,
     characters_query: Query<
@@ -114,7 +147,7 @@ pub fn set_hitboxes(
         ),
         With<Character>,
     >,
-    mut child_query: Query<&mut Transform , With<CollisionBox>>,
+    mut child_query: Query<&mut Transform, With<CollisionBox>>,
 ) {
     for (children, player, animation) in characters_query {
         let _progress = animation.progress;

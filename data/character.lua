@@ -12,7 +12,14 @@ return {
                     action = { SetAnimation = "idle" }
                 }
             }
-        }
+        },
+        attack_light = {
+            commands = {
+                { action = { SetHitboxes = "TODO" }
+                , condition = "Frame = 4",
+                },
+            }
+        },
     },
     animations = {
         idle = {
