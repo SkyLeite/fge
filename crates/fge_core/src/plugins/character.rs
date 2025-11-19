@@ -1,9 +1,12 @@
 use std::path::Path;
 
+use crate::action_context::ActionContext;
 use crate::prelude::*;
 use crate::sequence::Sequence;
+use bevy::ecs::system::RunSystemOnce;
 use bevy_rapier2d::prelude::*;
 use bevy_spritesheet_animation::prelude::*;
+use fge_models::{Action, Square};
 
 pub struct CharacterPlugin;
 
@@ -20,6 +23,7 @@ pub struct CharacterBundle {
     pub health: crate::components::Health,
     pub position: crate::components::Position,
     pub animation_player: crate::plugins::animation_player::AnimationPlayer,
+    pub state: crate::components::CharacterState,
 }
 
 #[derive(Component)]
@@ -89,6 +93,7 @@ pub fn spawn(
             position: crate::components::Position::default(),
             animation_player,
             character_data: Character(character),
+            state: CharacterState::default(),
         })
         .with_child((
             CollisionBox,
@@ -133,6 +138,47 @@ pub fn set_collision_boxes(
                     (collision_box.h / 2) as f32,
                 ));
             }
+        }
+    }
+}
+
+pub fn run_state_commands(
+    world: &mut World,
+    query: Query<(Entity, &mut Character, &CharacterState)>,
+) {
+    for (entity, character, state) in query.iter() {
+        let commands = match &**state {
+            fge_models::CharacterState::Standing => character.0.states.get(&"standing".into()),
+            fge_models::CharacterState::Crouching => character.0.states.get(&"crouching".into()),
+            fge_models::CharacterState::Airborne => character.0.states.get(&"airborne".into()),
+            fge_models::CharacterState::Custom(state_id) => character.0.states.get(state_id),
+        }
+        .map(|s| &s.commands);
+
+        if let Some(commands) = commands {
+            for command in commands {
+                // TODO: evaluate condition
+
+                run_command(world, entity, command);
+                // world.run_system_once_with(run_command, context).unwrap();
+            }
+        }
+    }
+}
+
+pub fn set_hitboxes_cmd(In(context): In<ActionContext<'_, Vec<Square>>>) {}
+
+pub fn run_command(world: &mut World, character: Entity, command: &fge_models::Command) {
+    match &command.action {
+        fge_models::Action::SetState(character_state) => todo!(),
+        fge_models::Action::SetAnimation(animation_id) => todo!(),
+        fge_models::Action::SetControl(_, _) => todo!(),
+        fge_models::Action::SetHitboxes(squares) => {
+            let context = ActionContext {
+                character_entity: character,
+                data: squares,
+            };
+            world.run_system_once_with(set_hitboxes_cmd, context);
         }
     }
 }

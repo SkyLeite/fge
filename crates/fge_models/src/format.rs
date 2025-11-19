@@ -63,12 +63,30 @@ pub struct State {
 #[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StateID(String);
 
+impl From<&str> for StateID {
+    fn from(value: &str) -> Self {
+        Self(value.to_string())
+    }
+}
+
+impl From<String> for StateID {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 #[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AnimationID(String);
 
 impl From<&str> for AnimationID {
     fn from(value: &str) -> Self {
         Self(value.to_string())
+    }
+}
+
+impl From<String> for AnimationID {
+    fn from(value: String) -> Self {
+        Self(value)
     }
 }
 
@@ -97,10 +115,14 @@ pub enum Action {
 
     /// Sets whether the character is currently being controlled
     SetControl(bool, bool),
+
+    /// Sets the hitboxes for this frame
+    SetHitboxes(Vec<Square>),
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub enum CharacterState {
+    #[default]
     Standing,
     Crouching,
     Airborne,
@@ -110,7 +132,7 @@ pub enum CharacterState {
 #[derive(Serialize, Deserialize)]
 pub struct Command {
     /// Action to run when this Command is executed
-    pub action: Option<Action>,
+    pub action: Action,
 
     /// Condition under which this Command should be run. If the expression returns "false", the command is skipped
     pub condition: Option<String>,

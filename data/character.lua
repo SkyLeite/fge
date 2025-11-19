@@ -15,8 +15,13 @@ return {
         },
         attack_light = {
             commands = {
-                { action = { SetHitboxes = "TODO" }
-                , condition = "Frame = 4",
+                { 
+                    action = { 
+                        SetHitboxes = {
+                            { x = 0, y = 0, w = 10, h = 10 }
+                        } 
+                    },
+                    condition = "frame >= 4 && frame <= 8",
                 },
             }
         },
