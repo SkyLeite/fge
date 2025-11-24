@@ -60,7 +60,7 @@ pub struct State {
     pub commands: Vec<Command>,
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StateID(String);
 
 impl From<&str> for StateID {
@@ -105,7 +105,7 @@ impl From<String> for SpritesheetID {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub enum Action {
     /// Sets a new character state
     SetState(CharacterState),
@@ -120,7 +120,7 @@ pub enum Action {
     SetHitboxes(Vec<Square>),
 }
 
-#[derive(Serialize, Deserialize, Default)]
+#[derive(Clone, Serialize, Deserialize, Default)]
 pub enum CharacterState {
     #[default]
     Standing,
@@ -129,7 +129,7 @@ pub enum CharacterState {
     Custom(StateID),
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct Command {
     /// Action to run when this Command is executed
     pub action: Action,

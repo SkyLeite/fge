@@ -12,7 +12,7 @@ pub struct AnimationPlayer {
 
 impl AnimationPlayer {
     pub fn new(animations: Animations, spritesheets: Spritesheets) -> Self {
-        let active_animation_id: AnimationID = "idle".into();
+        let active_animation_id: AnimationID = "standing".into();
 
         Self {
             animations,
@@ -50,12 +50,12 @@ fn create_spritesheet_animation(
         let default_sequence = animation_player
             .animations
             .get(&animation_player.active_animation_id)
-            .expect("Could not find animation `idle`");
+            .expect("Could not find animation `standing`");
 
         let sprite = animation_player
             .spritesheets
-            .get(&"idle".into())
-            .expect("Could not find spritesheet `idle`")
+            .get(&"standing".into())
+            .expect("Could not find spritesheet `standing`")
             .clone();
 
         let spritesheet_animation = SpritesheetAnimation::new(default_sequence.animation.clone());
