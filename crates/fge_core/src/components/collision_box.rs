@@ -5,6 +5,3 @@ pub struct CollisionBox;
 
 #[derive(Component)]
 pub struct Hitbox;
-
-#[derive(Component)]
-pub struct Hurtbox;

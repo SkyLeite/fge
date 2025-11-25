@@ -57,7 +57,7 @@ pub fn spawn(
         }
 
         let sprite = spritesheet
-            .with_size_hint(sheet.width as u32, sheet.height as u32)
+            .with_size_hint(sheet.width.into(), sheet.height.into())
             .sprite(&mut atlas_layouts);
 
         spritesheets.insert(sheet_id.clone(), sprite);
@@ -159,8 +159,8 @@ pub fn run_state_commands(
         .cloned()
         .collect::<Vec<_>>();
 
-        if commands.len() > 0 {
-            all_commands.push((entity, commands))
+        if !commands.is_empty() {
+            all_commands.push((entity, commands));
         }
     }
 
@@ -177,8 +177,8 @@ pub fn run_command(world: &mut World, character: Entity, command: &fge_models::C
     };
 
     match &command.action {
-        fge_models::Action::SetState(character_state) => todo!(),
-        fge_models::Action::SetAnimation(animation_id) => {
+        fge_models::Action::SetState(_character_state) => todo!(),
+        fge_models::Action::SetAnimation(_animation_id) => {
             println!("SetAnimation called");
         }
         fge_models::Action::SetControl(_, _) => todo!(),
@@ -210,11 +210,10 @@ pub fn clear_hitboxes(
 pub fn set_hitboxes_cmd(
     (In(context), InRef(squares)): (In<ActionContext>, InRef<Vec<Square>>),
     mut commands: Commands,
-    character_query: Query<(Entity, &Children), With<Character>>,
-    hitboxes_query: Query<&Hitbox>,
+    character_query: Query<Entity, With<Character>>,
 ) {
     println!("Running set_hitboxes_cmd");
-    for (character, children) in character_query {
+    for character in character_query {
         if character != context.character_entity {
             continue;
         }

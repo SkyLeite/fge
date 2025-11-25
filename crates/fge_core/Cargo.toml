@@ -11,3 +11,11 @@ fge_models = { path = "../fge_models" }
 
 [dev-dependencies]
 rstest = "0.26.1"
+
+[lints.clippy]
+float_arithmetic = "deny"
+float_cmp = "deny"
+float_cmp_const = "deny"
+lossy_float_literal = "deny"
+while_float = "deny"
+uninlined_format_args = "deny"

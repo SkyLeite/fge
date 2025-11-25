@@ -1,8 +1,7 @@
 use super::AnimationPlayer;
 use super::DEFAULT_ANIMATION;
 use crate::prelude::*;
-use bevy_spritesheet_animation::{plugin::AnimationSystemSet, prelude::*};
-use fge_models::AnimationID;
+use bevy_spritesheet_animation::prelude::*;
 
 pub fn create_spritesheet_animation(
     mut commands: Commands,
@@ -15,7 +14,7 @@ pub fn create_spritesheet_animation(
         let default_sequence = animation_player
             .animations
             .get(&animation_player.active_animation_id)
-            .expect(&format!("Could not find animation `{}`", DEFAULT_ANIMATION));
+            .unwrap_or_else(|| panic!("Could not find animation `{DEFAULT_ANIMATION}`"));
 
         let sprite = animation_player
             .spritesheets
