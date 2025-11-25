@@ -17,7 +17,7 @@ return {
                             { x = 0, y = 0, w = 200, h = 200 }
                         }
                     },
-                    condition = "frame >= 4 && frame <= 8",
+                    frames = { from = 4, to = 45 }
                 },
             }
         },
@@ -29,7 +29,6 @@ return {
                             { x = 0, y = 0, w = 10, h = 10 }
                         }
                     },
-                    condition = "frame >= 4 && frame <= 8",
                 },
             }
         },

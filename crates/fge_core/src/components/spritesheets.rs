@@ -14,4 +14,8 @@ impl Spritesheets {
     pub fn get(&self, id: &SpritesheetID) -> Option<&Sprite> {
         self.0.get(id)
     }
+
+    pub fn first(&self) -> Option<&Sprite> {
+        self.0.values().next()
+    }
 }

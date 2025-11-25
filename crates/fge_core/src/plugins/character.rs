@@ -4,9 +4,9 @@ use crate::action_context::ActionContext;
 use crate::prelude::*;
 use crate::sequence::Sequence;
 use bevy::ecs::system::RunSystemOnce;
-use bevy_rapier2d::{prelude::*, rapier::prelude::ColliderType};
+use bevy_rapier2d::prelude::*;
 use bevy_spritesheet_animation::prelude::*;
-use fge_models::{Action, Square};
+use fge_models::Square;
 
 pub struct CharacterPlugin;
 
@@ -14,7 +14,13 @@ impl Plugin for CharacterPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(Startup, spawn).add_systems(
             FixedUpdate,
-            (update_position, set_collision_boxes, run_state_commands),
+            (
+                clear_hitboxes,
+                update_position,
+                set_collision_boxes,
+                run_state_commands,
+            )
+                .chain(),
         );
     }
 }
@@ -148,21 +154,42 @@ pub fn set_collision_boxes(
 
 pub fn run_state_commands(
     world: &mut World,
-    query: &mut QueryState<(Entity, &mut Character, &CharacterState)>,
+    query: &mut QueryState<(
+        Entity,
+        &mut Character,
+        &CharacterState,
+        &SpritesheetAnimation,
+    )>,
 ) {
     println!("Running state commands");
     let mut all_commands = vec![];
-    for (entity, character, state) in query.iter(world) {
+    for (entity, character, state, animation) in query.iter(world) {
+        let progress = animation.progress.frame as u32;
         let commands = match &**state {
             fge_models::CharacterState::Standing => character.0.states.get(&"standing".into()),
             fge_models::CharacterState::Crouching => character.0.states.get(&"crouching".into()),
             fge_models::CharacterState::Airborne => character.0.states.get(&"airborne".into()),
             fge_models::CharacterState::Custom(state_id) => character.0.states.get(state_id),
         }
-        .map(|s| &s.commands);
+        .iter()
+        .flat_map(|s| &s.commands)
+        .filter(|command| {
+            if let Some(frames) = &command.frames {
+                match frames {
+                    fge_models::NumberOrRange::Number(number) => *number == progress,
+                    fge_models::NumberOrRange::Range(range) => {
+                        range.from <= progress && progress < range.to
+                    }
+                }
+            } else {
+                false
+            }
+        })
+        .cloned()
+        .collect::<Vec<_>>();
 
-        if let Some(commands) = commands {
-            all_commands.push((entity, commands.clone()))
+        if commands.len() > 0 {
+            all_commands.push((entity, commands))
         }
     }
 
@@ -192,6 +219,23 @@ pub fn run_command(world: &mut World, character: Entity, command: &fge_models::C
     }
 }
 
+pub fn clear_hitboxes(
+    mut commands: Commands,
+    character_query: Query<(Entity, &Children), With<Character>>,
+    hitboxes_query: Query<&Hitbox>,
+) {
+    for (character, children) in character_query {
+        for child in children {
+            let hitboxes = hitboxes_query.get(*child);
+
+            if hitboxes.is_ok() {
+                commands.entity(character).remove_child(*child);
+                commands.entity(*child).despawn();
+            }
+        }
+    }
+}
+
 pub fn set_hitboxes_cmd(
     (In(context), InRef(squares)): (In<ActionContext>, InRef<Vec<Square>>),
     mut commands: Commands,
@@ -202,17 +246,6 @@ pub fn set_hitboxes_cmd(
     for (character, children) in character_query {
         if character != context.character_entity {
             continue;
-        }
-
-        // Remove all existing hitboxes
-        println!("Removing existing hitboxes");
-        for child in children {
-            let hitboxes = hitboxes_query.get(*child);
-
-            if hitboxes.is_ok() {
-                commands.entity(character).remove_child(*child);
-                commands.entity(*child).despawn();
-            }
         }
 
         // Add hitboxes from `square`

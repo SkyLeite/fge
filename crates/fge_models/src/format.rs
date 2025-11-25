@@ -136,6 +136,24 @@ pub struct Command {
 
     /// Condition under which this Command should be run. If the expression returns "false", the command is skipped
     pub condition: Option<String>,
+
+    /// Range of frames to run this command during
+    pub frames: Option<NumberOrRange>,
+}
+
+#[derive(Clone, Copy, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NumberOrRange {
+    Number(u32),
+    Range(Range),
+}
+
+/// A (half-open) range bounded inclusively below and exclusively above (from..to).
+/// The range from..to contains all values with from <= x < to. It is empty if from >= to.
+#[derive(Copy, Clone, Serialize, Deserialize)]
+pub struct Range {
+    pub from: u32,
+    pub to: u32,
 }
 
 #[derive(Serialize, Deserialize)]
