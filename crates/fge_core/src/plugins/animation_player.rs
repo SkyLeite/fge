@@ -2,6 +2,8 @@ use crate::prelude::*;
 use bevy_spritesheet_animation::{plugin::AnimationSystemSet, prelude::*};
 use fge_models::AnimationID;
 
+static DEFAULT_ANIMATION: &str = "standing";
+
 #[derive(Component)]
 #[require(Sprite)]
 pub struct AnimationPlayer {
@@ -12,7 +14,7 @@ pub struct AnimationPlayer {
 
 impl AnimationPlayer {
     pub fn new(animations: Animations, spritesheets: Spritesheets) -> Self {
-        let active_animation_id: AnimationID = "standing".into();
+        let active_animation_id: AnimationID = DEFAULT_ANIMATION.into();
 
         Self {
             animations,
@@ -46,16 +48,15 @@ fn create_spritesheet_animation(
     >,
 ) {
     for (entity, animation_player) in query {
-        println!("Hi!");
         let default_sequence = animation_player
             .animations
             .get(&animation_player.active_animation_id)
-            .expect("Could not find animation `standing`");
+            .expect(&format!("Could not find animation `{}`", DEFAULT_ANIMATION));
 
         let sprite = animation_player
             .spritesheets
-            .get(&"standing".into())
-            .expect("Could not find spritesheet `standing`")
+            .first()
+            .expect("Could not find a spritesheet to use as the default.")
             .clone();
 
         let spritesheet_animation = SpritesheetAnimation::new(default_sequence.animation.clone());
