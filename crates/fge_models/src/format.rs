@@ -27,7 +27,7 @@ pub struct Character {
     pub max_health: u32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Spritesheet {
     /// Path to file containing the spritesheet
     pub file: PathBuf,

@@ -11,7 +11,7 @@ static DEFAULT_ANIMATION: &str = "standing";
 pub struct AnimationPlayer {
     pub animations: Animations,
     pub spritesheets: Spritesheets,
-    active_animation_id: AnimationID,
+    pub active_animation_id: AnimationID,
 }
 
 impl AnimationPlayer {

@@ -3,8 +3,8 @@ use crate::prelude::*;
 use crate::sequence::Sequence;
 use bevy::ecs::system::RunSystemOnce;
 use bevy_rapier2d::prelude::*;
-use bevy_spritesheet_animation::prelude::*;
-use fge_models::Square;
+use bevy_spritesheet_animation::{prelude::*, spritesheet};
+use fge_models::{AnimationID, Square};
 use std::path::Path;
 
 use super::{Character, CharacterBundle};
@@ -22,6 +22,7 @@ pub fn spawn(
     let mut spritesheets = Spritesheets::default();
 
     for (sheet_id, sheet) in &character.spritesheets {
+        dbg!(sheet_id, sheet);
         let image = assets.load(sheet.file.clone());
 
         let spritesheet = Spritesheet::new(&image, sheet.columns as usize, sheet.rows as usize);
@@ -153,7 +154,7 @@ pub fn run_state_commands(
                     }
                 }
             } else {
-                false
+                true
             }
         })
         .cloned()
@@ -178,8 +179,10 @@ pub fn run_command(world: &mut World, character: Entity, command: &fge_models::C
 
     match &command.action {
         fge_models::Action::SetState(_character_state) => todo!(),
-        fge_models::Action::SetAnimation(_animation_id) => {
-            println!("SetAnimation called");
+        fge_models::Action::SetAnimation(animation_id) => {
+            world
+                .run_system_once_with(set_animation_cmd, (context, animation_id))
+                .unwrap();
         }
         fge_models::Action::SetControl(_, _) => todo!(),
         fge_models::Action::SetHitboxes(squares) => {
@@ -233,5 +236,35 @@ pub fn set_hitboxes_cmd(
             let id = commands.spawn(hitbox).id();
             commands.entity(character).add_child(id);
         }
+    }
+}
+
+pub fn set_animation_cmd(
+    (In(context), InRef(animation_id)): (In<ActionContext>, InRef<AnimationID>),
+    mut commands: Commands,
+    character_query: Query<
+        (
+            Entity,
+            &mut crate::plugins::animation_player::AnimationPlayer,
+            &mut SpritesheetAnimation,
+        ),
+        With<Character>,
+    >,
+) {
+    println!("Running set_animation_cmd");
+    for (character, mut animation_player, mut spritesheet_animation) in character_query {
+        if character != context.character_entity {
+            continue;
+        }
+
+        animation_player.active_animation_id = animation_id.clone();
+        spritesheet_animation.animation = animation_player
+            .animations
+            .get(animation_id)
+            .unwrap()
+            .animation
+            .clone();
+
+        spritesheet_animation.reset();
     }
 }
