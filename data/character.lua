@@ -4,13 +4,11 @@ return {
     max_health = 2000,
     spritesheets = {
         standing = { file = "akiha_idle.png", columns = 12, rows = 1, width = 768, height = 112 },
+        c5a = { file = "akiha_c5a.png", columns = 6, rows = 1, width = 672, height = 112 },
     },
     states = {
         standing = {
             commands = {
-                {
-                    action = { SetAnimation = "standing" }
-                },
                 {
                     action = {
                         SetHitboxes = {
@@ -55,6 +53,24 @@ return {
                     { sheet = "standing", cell = { 9, 0 },  duration = 6 },
                     { sheet = "standing", cell = { 10, 0 }, duration = 6 },
                     { sheet = "standing", cell = { 11, 0 }, duration = 6 },
+                }
+            }
+        },
+        c5a = {
+            Sprite = {
+                default_collision_box = {
+                    x = 0,
+                    y = 0,
+                    w = 30,
+                    h = 100
+                },
+                frames = {
+                    { sheet = "c5a", cell = { 0, 0 }, duration = 4 },
+                    { sheet = "c5a", cell = { 1, 0 }, duration = 5 },
+                    { sheet = "c5a", cell = { 2, 0 }, duration = 6 },
+                    { sheet = "c5a", cell = { 3, 0 }, duration = 6 },
+                    { sheet = "c5a", cell = { 4, 0 }, duration = 6 },
+                    { sheet = "c5a", cell = { 5, 0 }, duration = 6 },
                 }
             }
         }
