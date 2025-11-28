@@ -246,6 +246,6 @@ pub fn set_animation_cmd(
             continue;
         }
 
-        animation_player.active_animation_id = animation_id.clone();
+        animation_player.set_animation(animation_id.clone());
     }
 }

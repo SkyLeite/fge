@@ -17,6 +17,12 @@ return {
                     },
                     frames = { from = 4, to = 45 }
                 },
+                {
+                    action = {
+                        SetAnimation = "c5a",
+                    },
+                    frames = 45,
+                }
             }
         },
         attack_light = {

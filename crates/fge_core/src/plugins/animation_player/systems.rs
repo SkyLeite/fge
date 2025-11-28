@@ -31,15 +31,9 @@ pub fn set_sprite(query: Query<(&super::components::AnimationPlayer, &mut Sprite
         let spritesheet = animation_player.spritesheets.get(&frame.sheet).unwrap();
 
         sprite.image = spritesheet.image.clone();
-
-        if let Some(atlas) = &mut sprite.texture_atlas {
-            // Next sprite!
-            atlas.index = frame.cell.0 as usize;
-        } else {
-            sprite.texture_atlas = Some(TextureAtlas {
-                layout: spritesheet.layout.clone(),
-                index: 1,
-            });
-        }
+        sprite.texture_atlas = Some(TextureAtlas {
+            layout: spritesheet.layout.clone(),
+            index: frame.cell.0 as usize,
+        });
     }
 }

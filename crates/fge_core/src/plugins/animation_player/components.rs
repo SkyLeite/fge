@@ -30,6 +30,17 @@ impl AnimationPlayer {
             .get(&self.active_animation_id)
             .expect("Invalid active_animation_id")
     }
+
+    /// Changes the currently playing animation.
+    pub fn set_animation(&mut self, animation_id: AnimationID) {
+        self.active_animation_id = animation_id;
+        self.reset();
+    }
+
+    /// Resets the animation progress to 0
+    pub fn reset(&mut self) {
+        self.animation_frame = 0;
+    }
 }
 
 #[derive(Component, Reflect, Deref, DerefMut)]
