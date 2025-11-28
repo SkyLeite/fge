@@ -1,6 +1,7 @@
 #![allow(clippy::type_complexity)]
 
 use bevy::prelude::*;
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
 mod action_context;
 mod components;
@@ -16,6 +17,8 @@ fn main() {
         .add_plugins(AnimationPlayerPlugin)
         .add_plugins(CharacterPlugin)
         .add_plugins(PhysicsPlugin)
+        .add_plugins(EguiPlugin::default())
+        .add_plugins(WorldInspectorPlugin::new())
         .add_systems(Update, update)
         .run();
 }
