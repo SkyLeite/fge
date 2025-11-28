@@ -12,4 +12,4 @@ pub use collision_box::*;
 pub use floor::Floor;
 pub use health::Health;
 pub use position::Position;
-pub use spritesheets::Spritesheets;
+pub use spritesheets::*;

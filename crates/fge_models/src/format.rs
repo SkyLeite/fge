@@ -1,8 +1,9 @@
 use std::{collections::HashMap, hash::Hash, path::PathBuf};
 
+use bevy_reflect::Reflect;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize)]
 pub struct Character {
     /// A unique identifier for this character.
     /// Example: `mvc2cable`
@@ -27,7 +28,7 @@ pub struct Character {
     pub max_health: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Serialize, Deserialize)]
 pub struct Spritesheet {
     /// Path to file containing the spritesheet
     pub file: PathBuf,
@@ -45,7 +46,7 @@ pub struct Spritesheet {
     pub height: u16,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize)]
 pub struct Author {
     /// The author's name
     pub name: String,
@@ -54,13 +55,13 @@ pub struct Author {
     pub email: String,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize)]
 pub struct State {
     /// A list of commands to be executed every frame when the character is in this state.
     pub commands: Vec<Command>,
 }
 
-#[derive(Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StateID(String);
 
 impl From<&str> for StateID {
@@ -75,7 +76,7 @@ impl From<String> for StateID {
     }
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Reflect, Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AnimationID(String);
 
 impl From<&str> for AnimationID {
@@ -90,7 +91,7 @@ impl From<String> for AnimationID {
     }
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
+#[derive(Reflect, Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct SpritesheetID(pub String);
 
 impl From<&str> for SpritesheetID {
@@ -105,7 +106,7 @@ impl From<String> for SpritesheetID {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Serialize, Deserialize)]
 pub enum Action {
     /// Sets a new character state
     SetState(CharacterState),
@@ -120,7 +121,7 @@ pub enum Action {
     SetHitboxes(Vec<Square>),
 }
 
-#[derive(Clone, Serialize, Deserialize, Default)]
+#[derive(Reflect, Clone, Serialize, Deserialize, Default)]
 pub enum CharacterState {
     #[default]
     Standing,
@@ -129,7 +130,7 @@ pub enum CharacterState {
     Custom(StateID),
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Serialize, Deserialize)]
 pub struct Command {
     /// Action to run when this Command is executed
     pub action: Action,
@@ -141,7 +142,7 @@ pub struct Command {
     pub frames: Option<NumberOrRange>,
 }
 
-#[derive(Clone, Copy, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Copy, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum NumberOrRange {
     Number(u32),
@@ -150,20 +151,20 @@ pub enum NumberOrRange {
 
 /// A (half-open) range bounded inclusively below and exclusively above (from..to).
 /// The range from..to contains all values with from <= x < to. It is empty if from >= to.
-#[derive(Copy, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Copy, Clone, Serialize, Deserialize)]
 pub struct Range {
     pub from: u32,
     pub to: u32,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize)]
 pub enum Animation {
     Sprite(SpriteAnimation),
     Model(ModelAnimation),
 }
 
 /// An animation that consists of a sequence of 2D sprites
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Serialize, Deserialize)]
 pub struct SpriteAnimation {
     /// List of frames to be shown
     pub frames: Vec<Frame>,
@@ -172,7 +173,7 @@ pub struct SpriteAnimation {
     pub default_collision_box: Option<Square>,
 }
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Serialize, Deserialize)]
 /// A generic Box, used to represent collision, hit and hurtboxes.
 pub struct Square {
     /// X position of the top-left point
@@ -188,7 +189,7 @@ pub struct Square {
     pub h: u32,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Frame {
     /// ID of the spritesheet to use for this frame.
     pub sheet: SpritesheetID,
@@ -201,11 +202,11 @@ pub struct Frame {
 }
 
 /// A single frame of an animation
-#[derive(Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize)]
 pub struct Sprite {
     pub file: std::path::PathBuf,
 }
 
 /// An animation that uses a 3D model. Not currently implemented, and does nothing.
-#[derive(Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize)]
 pub struct ModelAnimation {}

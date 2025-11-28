@@ -1,9 +1,8 @@
 use bevy::prelude::*;
-use bevy_spritesheet_animation::prelude::Animation;
 use fge_models::{Frame, Square};
 
+#[derive(Reflect)]
 pub struct Sequence {
-    pub animation: Handle<Animation>,
     pub default_collision_box: Option<Square>,
     pub frames: Vec<Frame>,
 }
@@ -26,6 +25,10 @@ impl Sequence {
     /// Given an animation frame number, returns the Frame of this sequence that corresponds to it.
     pub fn get_frame(&self, index: u32) -> Option<&Frame> {
         Sequence::get_frame_p(&self.frames, index)
+    }
+
+    pub fn duration(&self) -> u32 {
+        self.frames.iter().fold(0, |acc, f| acc + f.duration)
     }
 }
 

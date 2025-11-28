@@ -7,6 +7,7 @@ edition = "2024"
 serde = { version = "1.0.228", features = ["derive"] }
 fixtures = "2"
 mlua = { version = "0.11.4", features = ["lua54", "serde", "vendored"] }
+bevy_reflect = "0.17.2"
 
 [build-dependencies]
 fixtures = "2"

@@ -1,9 +1,10 @@
-use crate::action_context::ActionContext;
 use crate::prelude::*;
 use crate::sequence::Sequence;
-use bevy::ecs::system::RunSystemOnce;
+use crate::{
+    action_context::ActionContext, plugins::animation_player::components::AnimationPlayer,
+};
+use bevy::{ecs::system::RunSystemOnce, text};
 use bevy_rapier2d::prelude::*;
-use bevy_spritesheet_animation::{prelude::*, spritesheet};
 use fge_models::{AnimationID, Square};
 use std::path::Path;
 
@@ -12,60 +13,57 @@ use super::{Character, CharacterBundle};
 pub fn spawn(
     mut commands: Commands,
     assets: Res<AssetServer>,
-    mut animations: ResMut<Assets<Animation>>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn(Camera2d);
 
     let character = fge_models::serde::from_file(Path::new("./data/character.lua")).unwrap();
-    let mut animation_atlas = Animations::default();
+
+    // Load spritesheets
     let mut spritesheets = Spritesheets::default();
+    for (id, spritesheet) in &character.spritesheets {
+        let texture = assets.load(spritesheet.file.clone());
+        let layout = TextureAtlasLayout::from_grid(
+            UVec2::new(
+                (spritesheet.width / spritesheet.columns).into(),
+                (spritesheet.height / spritesheet.rows).into(),
+            ),
+            spritesheet.columns.into(),
+            spritesheet.rows.into(),
+            None,
+            None,
+        );
+        let texture_atlas_layout = atlas_layouts.add(layout);
 
-    for (sheet_id, sheet) in &character.spritesheets {
-        dbg!(sheet_id, sheet);
-        let image = assets.load(sheet.file.clone());
-
-        let spritesheet = Spritesheet::new(&image, sheet.columns as usize, sheet.rows as usize);
-
-        for (id, anim) in &character.animations {
-            let mut animation_builder = spritesheet
-                .create_animation()
-                .set_duration(AnimationDuration::PerFrame(16));
-
-            match anim {
-                fge_models::Animation::Sprite(sprite_animation) => {
-                    let animation_cells: Vec<(usize, usize)> = sprite_animation
-                        .frames
-                        .iter()
-                        .flat_map(|f| {
-                            vec![(f.cell.0 as usize, f.cell.1 as usize); f.duration as usize]
-                        })
-                        .collect();
-
-                    animation_builder = animation_builder.add_cells(animation_cells);
-
-                    let animation = animation_builder.build();
-                    let animation_handle = animations.add(animation);
-                    let sequence = Sequence {
-                        animation: animation_handle,
-                        default_collision_box: sprite_animation.default_collision_box.clone(),
-                        frames: sprite_animation.frames.clone(),
-                    };
-                    animation_atlas.insert(id.clone(), sequence);
-                }
-                fge_models::Animation::Model(_model_animation) => todo!(),
-            }
-        }
-
-        let sprite = spritesheet
-            .with_size_hint(sheet.width.into(), sheet.height.into())
-            .sprite(&mut atlas_layouts);
-
-        spritesheets.insert(sheet_id.clone(), sprite);
+        spritesheets.insert(
+            id.clone(),
+            LoadedSpritesheet {
+                image: texture,
+                layout: texture_atlas_layout,
+            },
+        );
     }
 
-    let animation_player =
-        crate::plugins::animation_player::AnimationPlayer::new(animation_atlas, spritesheets);
+    // Create animation atlas
+    let mut animation_atlas = Animations::default();
+    for (id, animation) in &character.animations {
+        match animation {
+            fge_models::Animation::Sprite(sprite_animation) => {
+                let sequence = Sequence {
+                    default_collision_box: sprite_animation.default_collision_box.clone(),
+                    frames: sprite_animation.frames.clone(),
+                };
+
+                animation_atlas.insert(id.clone(), sequence);
+            }
+            fge_models::Animation::Model(_model_animation) => todo!(),
+        }
+    }
+
+    let animation_player = crate::plugins::animation_player::components::AnimationPlayer::new(
+        animation_atlas,
+        spritesheets,
+    );
 
     commands
         .spawn(CharacterBundle {
@@ -94,16 +92,13 @@ pub fn set_collision_boxes(
     characters_query: Query<
         (
             &Children,
-            &crate::plugins::animation_player::AnimationPlayer,
-            &SpritesheetAnimation,
+            &crate::plugins::animation_player::components::AnimationPlayer,
         ),
         With<Character>,
     >,
     mut child_query: Query<&mut Transform, With<CollisionBox>>,
 ) {
-    for (children, player, animation) in characters_query {
-        let _progress = animation.progress;
-
+    for (children, player) in characters_query {
         let sequence = player.current_sequence();
 
         if let Some(collision_box) = &sequence.default_collision_box {
@@ -126,17 +121,12 @@ pub fn set_collision_boxes(
 
 pub fn run_state_commands(
     world: &mut World,
-    query: &mut QueryState<(
-        Entity,
-        &mut Character,
-        &CharacterState,
-        &SpritesheetAnimation,
-    )>,
+    query: &mut QueryState<(Entity, &mut Character, &CharacterState, &AnimationPlayer)>,
 ) {
     println!("Running state commands");
     let mut all_commands = vec![];
     for (entity, character, state, animation) in query.iter(world) {
-        let progress = animation.progress.frame as u32;
+        let progress = animation.animation_frame;
         let commands = match &**state {
             fge_models::CharacterState::Standing => character.0.states.get(&"standing".into()),
             fge_models::CharacterState::Crouching => character.0.states.get(&"crouching".into()),
@@ -245,26 +235,17 @@ pub fn set_animation_cmd(
     character_query: Query<
         (
             Entity,
-            &mut crate::plugins::animation_player::AnimationPlayer,
-            &mut SpritesheetAnimation,
+            &mut crate::plugins::animation_player::components::AnimationPlayer,
         ),
         With<Character>,
     >,
 ) {
     println!("Running set_animation_cmd");
-    for (character, mut animation_player, mut spritesheet_animation) in character_query {
+    for (character, mut animation_player) in character_query {
         if character != context.character_entity {
             continue;
         }
 
         animation_player.active_animation_id = animation_id.clone();
-        spritesheet_animation.animation = animation_player
-            .animations
-            .get(animation_id)
-            .unwrap()
-            .animation
-            .clone();
-
-        spritesheet_animation.reset();
     }
 }
