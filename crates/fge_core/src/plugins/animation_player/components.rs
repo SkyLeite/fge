@@ -14,6 +14,7 @@ pub struct AnimationPlayer {
 }
 
 impl AnimationPlayer {
+    /// Creates a new instance of AnimationPlayer
     pub fn new(animations: Animations, spritesheets: Spritesheets) -> Self {
         let active_animation_id: AnimationID = super::DEFAULT_ANIMATION.into();
 
@@ -25,6 +26,7 @@ impl AnimationPlayer {
         }
     }
 
+    /// Returns the currently active sequence
     pub fn current_sequence(&self) -> &Sequence {
         self.animations
             .get(&self.active_animation_id)
@@ -52,6 +54,7 @@ impl AnimationPlayer {
     }
 }
 
+/// A timer that represents 16ms, or a single frame at 60 fps, used for timing animations
 #[derive(Component, Reflect, Deref, DerefMut)]
 pub struct AnimationTimer(Timer);
 
