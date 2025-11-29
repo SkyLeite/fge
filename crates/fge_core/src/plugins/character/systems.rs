@@ -3,7 +3,7 @@ use crate::sequence::Sequence;
 use crate::{
     action_context::ActionContext, plugins::animation_player::components::AnimationPlayer,
 };
-use bevy::{ecs::system::RunSystemOnce, text};
+use bevy::ecs::system::RunSystemOnce;
 use bevy_rapier2d::prelude::*;
 use fge_models::{AnimationID, Square};
 use std::path::Path;
@@ -231,7 +231,6 @@ pub fn set_hitboxes_cmd(
 
 pub fn set_animation_cmd(
     (In(context), InRef(animation_id)): (In<ActionContext>, InRef<AnimationID>),
-    mut commands: Commands,
     character_query: Query<
         (
             Entity,

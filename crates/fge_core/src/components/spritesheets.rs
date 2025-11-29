@@ -20,8 +20,4 @@ impl Spritesheets {
     pub fn get(&self, id: &SpritesheetID) -> Option<&LoadedSpritesheet> {
         self.0.get(id)
     }
-
-    pub fn first(&self) -> Option<&LoadedSpritesheet> {
-        self.0.values().next()
-    }
 }
