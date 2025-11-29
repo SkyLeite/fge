@@ -9,8 +9,8 @@ use fge_models::AnimationID;
 pub struct AnimationPlayer {
     pub animations: Animations,
     pub spritesheets: Spritesheets,
-    pub active_animation_id: AnimationID,
     pub animation_frame: u32,
+    active_animation_id: AnimationID,
 }
 
 impl AnimationPlayer {
@@ -33,6 +33,15 @@ impl AnimationPlayer {
 
     /// Changes the currently playing animation.
     pub fn set_animation(&mut self, animation_id: AnimationID) {
+        if !self.animations.contains_key(&animation_id) {
+            warn!(
+                "Animation atlas does not contain animation {:#?}",
+                animation_id
+            );
+
+            return;
+        }
+
         self.active_animation_id = animation_id;
         self.reset();
     }

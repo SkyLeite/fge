@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use crate::prelude::*;
 use bevy::prelude::*;
 
-#[derive(Reflect, Default, Component)]
+#[derive(Reflect, Default, Component, Deref)]
 pub struct Animations(HashMap<AnimationID, Sequence>);
 
 impl Animations {
