@@ -20,11 +20,11 @@ return {
                 }
             },
             cancels = {
-                begin_walk_forward = {},
+                pre_walk_forward = {},
                 c5a = {},
             }
         },
-        begin_walk_forward = {
+        pre_walk_forward = {
             commands = {
                 {
                     action = {
@@ -97,7 +97,7 @@ return {
                 }
             }
         },
-        begin_walk_forward = {
+        pre_walk_forward = {
             Sprite = {
                 default_collision_box = {
                     x = 0,
