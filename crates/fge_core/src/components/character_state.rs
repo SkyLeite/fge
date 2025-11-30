@@ -2,8 +2,8 @@ use std::ops::{Deref, DerefMut};
 
 use crate::prelude::*;
 
-#[derive(Component, Default)]
-pub struct CharacterState(fge_models::CharacterState);
+#[derive(Reflect, Component, Default)]
+pub struct CharacterState(pub fge_models::CharacterState);
 
 impl Deref for CharacterState {
     type Target = fge_models::CharacterState;

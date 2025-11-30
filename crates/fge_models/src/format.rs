@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash, path::PathBuf};
+use std::{collections::HashMap, fmt::Display, hash::Hash, ops::Deref, path::PathBuf};
 
 use bevy_reflect::Reflect;
 use serde::{Deserialize, Serialize};
@@ -55,14 +55,43 @@ pub struct Author {
     pub email: String,
 }
 
-#[derive(Reflect, Serialize, Deserialize)]
+#[derive(Reflect, Clone, Serialize, Deserialize)]
 pub struct State {
     /// A list of commands to be executed every frame when the character is in this state.
     pub commands: Vec<Command>,
+
+    /// States in which this state can be canceled into
+    pub cancels: HashMap<StateID, Cancel>,
+}
+
+#[derive(Reflect, Clone, Serialize, Deserialize)]
+pub struct Condition(String);
+
+impl Deref for Condition {
+    type Target = String;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Reflect, Clone, Serialize, Deserialize)]
+pub struct Cancel {
+    /// Frame range in which this cancel window is valid. If omitted, the cancel window is always valid
+    pub frames: Option<NumberOrRange>,
+
+    /// Extra conditions to make this cancel window valid
+    pub condition: Option<Condition>,
 }
 
 #[derive(Reflect, Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
 pub struct StateID(String);
+
+impl Display for StateID {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
 
 impl From<&str> for StateID {
     fn from(value: &str) -> Self {
@@ -78,6 +107,12 @@ impl From<String> for StateID {
 
 #[derive(Reflect, Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
 pub struct AnimationID(String);
+
+impl Display for AnimationID {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.0)
+    }
+}
 
 impl From<&str> for AnimationID {
     fn from(value: &str) -> Self {
@@ -108,7 +143,7 @@ impl From<String> for SpritesheetID {
 
 #[derive(Reflect, Clone, Serialize, Deserialize)]
 pub enum Action {
-    /// Sets a new character state
+    /// Sets a new character state. If there's an animation with the same name as the state, it is also set
     SetState(CharacterState),
 
     /// Sets the character's currently playing animation
@@ -122,6 +157,7 @@ pub enum Action {
 }
 
 #[derive(Reflect, Clone, Serialize, Deserialize, Default)]
+#[serde(untagged)]
 pub enum CharacterState {
     #[default]
     Standing,
@@ -136,7 +172,7 @@ pub struct Command {
     pub action: Action,
 
     /// Condition under which this Command should be run. If the expression returns "false", the command is skipped
-    pub condition: Option<String>,
+    pub condition: Option<Condition>,
 
     /// Range of frames to run this command during
     pub frames: Option<NumberOrRange>,

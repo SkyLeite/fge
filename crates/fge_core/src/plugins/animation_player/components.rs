@@ -7,10 +7,11 @@ use fge_models::AnimationID;
 #[derive(Component, Reflect)]
 #[require(Sprite, AnimationTimer)]
 pub struct AnimationPlayer {
+    active_animation_id: AnimationID,
+    pub animation_frame: u32,
+
     pub animations: Animations,
     pub spritesheets: Spritesheets,
-    pub animation_frame: u32,
-    active_animation_id: AnimationID,
 }
 
 impl AnimationPlayer {

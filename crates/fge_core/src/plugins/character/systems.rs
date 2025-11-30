@@ -168,7 +168,11 @@ pub fn run_command(world: &mut World, character: Entity, command: &fge_models::C
     };
 
     match &command.action {
-        fge_models::Action::SetState(_character_state) => todo!(),
+        fge_models::Action::SetState(character_state) => {
+            world
+                .run_system_once_with(set_state_cmd, (context, character_state))
+                .unwrap();
+        }
         fge_models::Action::SetAnimation(animation_id) => {
             world
                 .run_system_once_with(set_animation_cmd, (context, animation_id))
@@ -246,5 +250,39 @@ pub fn set_animation_cmd(
         }
 
         animation_player.set_animation(animation_id.clone());
+    }
+}
+
+pub fn set_state_cmd(
+    (In(context), InRef(character_state)): (In<ActionContext>, InRef<fge_models::CharacterState>),
+    character_query: Query<
+        (
+            Entity,
+            &mut CharacterState,
+            &mut crate::plugins::animation_player::components::AnimationPlayer,
+        ),
+        With<Character>,
+    >,
+) {
+    println!("Running set_animation_cmd");
+    for (character, mut state, mut animation_player) in character_query {
+        if character != context.character_entity {
+            continue;
+        }
+
+        // Set the new state
+        state.0 = character_state.clone();
+
+        // Set the matching animation, if any
+        let animation_id: AnimationID = match character_state {
+            fge_models::CharacterState::Standing => "standing".into(),
+            fge_models::CharacterState::Crouching => "crouching".into(),
+            fge_models::CharacterState::Airborne => "airborne".into(),
+            fge_models::CharacterState::Custom(state_id) => state_id.to_string().into(),
+        };
+
+        if animation_player.animations.contains_key(&animation_id) {
+            animation_player.set_animation(animation_id);
+        }
     }
 }

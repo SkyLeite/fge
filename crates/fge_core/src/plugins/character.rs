@@ -8,6 +8,7 @@ pub struct CharacterPlugin;
 impl Plugin for CharacterPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Character>()
+            .register_type::<CharacterState>()
             .add_systems(Startup, systems::spawn)
             .add_systems(
                 FixedUpdate,

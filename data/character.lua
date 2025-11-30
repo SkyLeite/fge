@@ -5,6 +5,7 @@ return {
     spritesheets = {
         standing = { file = "akiha_idle.png", columns = 12, rows = 1, width = 768, height = 112 },
         c5a = { file = "akiha_c5a.png", columns = 6, rows = 1, width = 672, height = 112 },
+        walk_forward = { file = "akiha_walk_forward.png", columns = 13, rows = 1, width = 3328, height = 256 },
     },
     states = {
         standing = {
@@ -16,16 +17,29 @@ return {
                         }
                     },
                     frames = { from = 4, to = 45 }
-                },
-                {
-                    action = {
-                        SetAnimation = "c5a",
-                    },
-                    frames = 45,
                 }
+            },
+            cancels = {
+                begin_walk_forward = {},
+                c5a = {},
             }
         },
-        attack_light = {
+        begin_walk_forward = {
+            commands = {
+                {
+                    action = {
+                        SetState = "walk_forward",
+                    },
+                    frames = 1,
+                }
+            },
+            cancels = {}
+        },
+        walk_forward = {
+            commands = {},
+            cancels = {}
+        },
+        c5a = {
             commands = {
                 {
                     action = {
@@ -34,6 +48,9 @@ return {
                         }
                     },
                 },
+            },
+            cancels = {
+                attack_medium = {}
             }
         },
     },
@@ -77,6 +94,43 @@ return {
                     { sheet = "c5a", cell = { 3, 0 }, duration = 6 },
                     { sheet = "c5a", cell = { 4, 0 }, duration = 6 },
                     { sheet = "c5a", cell = { 5, 0 }, duration = 6 },
+                }
+            }
+        },
+        begin_walk_forward = {
+            Sprite = {
+                default_collision_box = {
+                    x = 0,
+                    y = 0,
+                    w = 30,
+                    h = 100
+                },
+                frames = {
+                    { sheet = "walk_forward", cell = { 0, 0 }, duration = 6 }
+                }
+            }
+        },
+        walk_forward = {
+            Sprite = {
+                default_collision_box = {
+                    x = 0,
+                    y = 0,
+                    w = 30,
+                    h = 100
+                },
+                frames = {
+                    { sheet = "walk_forward", cell = { 1, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 2, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 3, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 4, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 5, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 6, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 7, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 8, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 9, 0 },  duration = 6 },
+                    { sheet = "walk_forward", cell = { 10, 0 }, duration = 6 },
+                    { sheet = "walk_forward", cell = { 11, 0 }, duration = 6 },
+                    { sheet = "walk_forward", cell = { 12, 0 }, duration = 6 },
                 }
             }
         }
