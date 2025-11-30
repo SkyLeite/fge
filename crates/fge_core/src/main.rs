@@ -17,6 +17,7 @@ fn main() {
         .add_plugins(AnimationPlayerPlugin)
         .add_plugins(CharacterPlugin)
         .add_plugins(PhysicsPlugin)
+        .add_plugins(InputPlugin)
         .add_plugins(EguiPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
         .add_systems(Startup, setup)

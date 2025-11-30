@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{plugins::input::InputHistory, prelude::*};
 use bevy_rapier2d::prelude::*;
 
 mod systems;
@@ -33,5 +33,5 @@ pub struct CharacterBundle {
 }
 
 #[derive(Component, Reflect)]
-#[require(Position, RigidBody::Dynamic, Transform, GravityScale)]
+#[require(Position, RigidBody::Dynamic, Transform, GravityScale, InputHistory)]
 pub struct Character(#[allow(unused)] fge_models::Character);
