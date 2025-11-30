@@ -19,8 +19,10 @@ fn main() {
         .add_plugins(PhysicsPlugin)
         .add_plugins(EguiPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
-        .add_systems(Update, update)
+        .add_systems(Startup, setup)
         .run();
 }
 
-fn update() {}
+fn setup(mut commands: Commands) {
+    commands.spawn(Camera2d);
+}

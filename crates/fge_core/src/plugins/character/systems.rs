@@ -15,8 +15,6 @@ pub fn spawn(
     assets: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    commands.spawn(Camera2d);
-
     let character = fge_models::serde::from_file(Path::new("./data/character.lua")).unwrap();
 
     // Load spritesheets
