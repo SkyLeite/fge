@@ -12,7 +12,10 @@ pub struct AnimationPlayerPlugin;
 impl Plugin for AnimationPlayerPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<components::AnimationPlayer>()
-            .add_systems(FixedFirst, systems::set_animation_frame)
-            .add_systems(FixedUpdate, systems::set_sprite);
+            .add_systems(
+                FixedUpdate,
+                systems::set_animation_frame.in_set(system_sets::Visual),
+            )
+            .add_systems(FixedUpdate, systems::set_sprite.in_set(system_sets::Visual));
     }
 }

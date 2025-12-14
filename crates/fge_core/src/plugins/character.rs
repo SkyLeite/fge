@@ -14,11 +14,13 @@ impl Plugin for CharacterPlugin {
                 FixedUpdate,
                 (
                     systems::clear_hitboxes,
+                    systems::movement,
                     systems::update_position,
                     systems::set_collision_boxes,
                     systems::run_state_commands,
                 )
-                    .chain(),
+                    .chain()
+                    .in_set(system_sets::Gameplay),
             );
     }
 }

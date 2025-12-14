@@ -24,17 +24,17 @@ return {
                 c5a = {},
             }
         },
-        pre_walk_forward = {
-            commands = {
-                {
-                    action = {
-                        SetState = "walk_forward",
-                    },
-                    frames = 1,
-                }
-            },
-            cancels = {}
-        },
+        -- pre_walk_forward = {
+        --     commands = {
+        --         {
+        --             action = {
+        --                 SetState = "walk_forward",
+        --             },
+        --             frames = 1,
+        --         }
+        --     },
+        --     cancels = {}
+        -- },
         walk_forward = {
             commands = {},
             cancels = {}

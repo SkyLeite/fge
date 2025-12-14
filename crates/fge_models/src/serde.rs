@@ -25,7 +25,7 @@ mod test {
     pub fn basic(path: &std::path::Path) {
         let character = super::from_file(path).unwrap();
 
-        assert_eq!(character.id, "sf4viper");
-        assert_eq!(character.name, "C. Viper");
+        assert_eq!(character.id, "mbaccakiha");
+        assert_eq!(character.name, "Akiha");
     }
 }

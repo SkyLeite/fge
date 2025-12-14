@@ -1,3 +1,4 @@
+use crate::plugins::input::{Input, InputHistory};
 use crate::prelude::*;
 use crate::sequence::Sequence;
 use crate::{
@@ -121,7 +122,6 @@ pub fn run_state_commands(
     world: &mut World,
     query: &mut QueryState<(Entity, &mut Character, &CharacterState, &AnimationPlayer)>,
 ) {
-    println!("Running state commands");
     let mut all_commands = vec![];
     for (entity, character, state, animation) in query.iter(world) {
         let progress = animation.animation_frame;
@@ -207,14 +207,13 @@ pub fn set_hitboxes_cmd(
     mut commands: Commands,
     character_query: Query<Entity, With<Character>>,
 ) {
-    println!("Running set_hitboxes_cmd");
+    // println!("Running set_hitboxes_cmd");
     for character in character_query {
         if character != context.character_entity {
             continue;
         }
 
         // Add hitboxes from `square`
-        println!("Adding hitboxes");
         let hitboxes = squares.iter().map(|square| {
             (
                 Hitbox {},
@@ -241,7 +240,7 @@ pub fn set_animation_cmd(
         With<Character>,
     >,
 ) {
-    println!("Running set_animation_cmd");
+    // println!("Running set_animation_cmd");
     for (character, mut animation_player) in character_query {
         if character != context.character_entity {
             continue;
@@ -262,7 +261,7 @@ pub fn set_state_cmd(
         With<Character>,
     >,
 ) {
-    println!("Running set_animation_cmd");
+    // println!("Running set_animation_cmd");
     for (character, mut state, mut animation_player) in character_query {
         if character != context.character_entity {
             continue;
@@ -281,6 +280,40 @@ pub fn set_state_cmd(
 
         if animation_player.animations.contains_key(&animation_id) {
             animation_player.set_animation(animation_id);
+        }
+    }
+}
+
+pub fn movement(
+    query: Query<(
+        &Character,
+        &mut Transform,
+        &InputHistory,
+        &mut AnimationPlayer,
+    )>,
+) {
+    for (_character, mut transform, input_history, mut animation_player) in query {
+        let last_input = input_history.history.back();
+
+        if input_history.just_pressed(Input::F) {
+            println!("Pressed!");
+            animation_player.set_animation("walk_forward".into());
+        }
+
+        if input_history.just_released(Input::F) {
+            animation_player.set_animation("standing".into());
+        }
+
+        if let Some(last_input) = last_input {
+            if last_input.contains(Input::F) {
+                println!("Moving!");
+                transform.translation.x += 3.0;
+            }
+
+            if last_input.contains(Input::B) {
+                println!("Moving!");
+                transform.translation.x -= 3.0;
+            }
         }
     }
 }
