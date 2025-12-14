@@ -20,17 +20,43 @@ impl Default for InputHistory {
     }
 }
 
+#[allow(dead_code)]
 impl InputHistory {
+    /// Adds a new input to the input history
     pub fn push(&mut self, input: BitFlags<Input>) {
         self.history.enqueue(input);
     }
 
+    /// Returns true if the given input was released on this frame
+    ///
+    /// More specifically, returns true if the previous frame contains the input, but the current doesn't
     pub fn just_released(&self, key: Input) -> bool {
         !self.history[15].contains(key) && self.history[14].contains(key)
     }
 
+    /// Returns true if the given input was first pressed on this frame
+    ///
+    /// More specifically, returns true if the previous frame does not contain the input, but the current does
     pub fn just_pressed(&self, key: Input) -> bool {
         self.history[15].contains(key) && !self.history[14].contains(key)
+    }
+
+    /// Returns true if the given input was pressed on this frame
+    pub fn pressed(&self, key: Input) -> bool {
+        self.history[15].contains(key)
+    }
+
+    /// Returns true if the given input is being held.
+    ///
+    /// More specifically, returns true if both the current and previous frames contain the input
+    pub fn is_held(&self, key: Input) -> bool {
+        self.history[15].contains(key) && self.history[14].contains(key)
+    }
+
+    /// Returns the most recent input frame
+    pub fn last(&self) -> &BitFlags<Input> {
+        // Unwrap because we guarantee the buffer is always full by initializing with fill_default()
+        self.history.back().unwrap()
     }
 }
 

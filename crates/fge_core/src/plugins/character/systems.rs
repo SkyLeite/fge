@@ -293,27 +293,23 @@ pub fn movement(
     )>,
 ) {
     for (_character, mut transform, input_history, mut animation_player) in query {
-        let last_input = input_history.history.back();
-
         if input_history.just_pressed(Input::F) {
             println!("Pressed!");
             animation_player.set_animation("walk_forward".into());
+            transform.translation.x += 3.0;
         }
 
         if input_history.just_released(Input::F) {
             animation_player.set_animation("standing".into());
+            transform.translation.x -= 3.0;
         }
 
-        if let Some(last_input) = last_input {
-            if last_input.contains(Input::F) {
-                println!("Moving!");
-                transform.translation.x += 3.0;
-            }
+        if input_history.pressed(Input::F) {
+            transform.translation.x += 3.0;
+        }
 
-            if last_input.contains(Input::B) {
-                println!("Moving!");
-                transform.translation.x -= 3.0;
-            }
+        if input_history.pressed(Input::B) {
+            transform.translation.x -= 3.0;
         }
     }
 }
