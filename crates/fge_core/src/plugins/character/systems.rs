@@ -302,18 +302,21 @@ pub fn movement(
             transform.translation.x += 3.0;
         }
 
-        if input_history.just_released(Input::F) || input_history.just_released(Input::B) {
-            animation_player.set_animation("standing".into());
-            transform.translation.x -= 3.0;
-        }
-
         if input_history.just_pressed(Input::B) {
             animation_player.set_animation("walk_backward".into());
             transform.translation.x -= 3.0;
+            continue;
         }
 
         if input_history.pressed(Input::B) {
             transform.translation.x -= 3.0;
+            continue;
+        }
+
+        if input_history.just_released(Input::F) || input_history.just_released(Input::B) {
+            animation_player.set_animation("standing".into());
+            transform.translation.x -= 3.0;
+            continue;
         }
     }
 }
