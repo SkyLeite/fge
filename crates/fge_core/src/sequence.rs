@@ -57,7 +57,7 @@ mod test {
             .iter()
             .enumerate()
             .map(|(index, duration)| Frame {
-                sheet: format!("id-{index}").into(),
+                sheet: Some(format!("id-{index}").into()),
                 cell: (1, 1),
                 duration: *duration,
             })
