@@ -63,7 +63,8 @@ mod test {
             })
             .collect();
 
-        let out = Sequence::get_frame_p(&frames, index).map(|f| f.sheet.0.as_str());
+        let out =
+            Sequence::get_frame_p(&frames, index).map(|f| f.sheet.as_ref().unwrap().0.as_str());
 
         assert_eq!(out, expected, "Got id {:?}, expected {:?}", out, expected);
     }
