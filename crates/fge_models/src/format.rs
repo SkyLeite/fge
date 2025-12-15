@@ -212,11 +212,11 @@ pub struct SpriteAnimation {
 #[derive(Reflect, Clone, Serialize, Deserialize)]
 /// A generic Box, used to represent collision, hit and hurtboxes.
 pub struct Square {
-    /// X position of the top-left point
-    pub x: u32,
+    /// X position of the center point
+    pub x: i32,
 
-    /// Y position of the top-left point
-    pub y: u32,
+    /// Y position of the center point
+    pub y: i32,
 
     /// Width of the box, in pixels
     pub w: u32,

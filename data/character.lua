@@ -53,7 +53,7 @@ return {
             Sprite = {
                 default_collision_box = {
                     x = 0,
-                    y = 0,
+                    y = -35,
                     w = 30,
                     h = 100
                 },
@@ -77,7 +77,7 @@ return {
             Sprite = {
                 default_collision_box = {
                     x = 0,
-                    y = 0,
+                    y = -35,
                     w = 30,
                     h = 100
                 },
@@ -95,7 +95,7 @@ return {
             Sprite = {
                 default_collision_box = {
                     x = 0,
-                    y = 0,
+                    y = -35,
                     w = 30,
                     h = 100
                 },
@@ -108,7 +108,7 @@ return {
             Sprite = {
                 default_collision_box = {
                     x = 0,
-                    y = 0,
+                    y = -35,
                     w = 30,
                     h = 100
                 },
@@ -132,7 +132,7 @@ return {
             Sprite = {
                 default_collision_box = {
                     x = 0,
-                    y = 0,
+                    y = -35,
                     w = 30,
                     h = 100
                 },
