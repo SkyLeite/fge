@@ -15,7 +15,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-    - run: rustup toolchain install stable --profile minimal
+    - uses: DeterminateSystems/nix-installer-action@main
     - uses: Swatinem/rust-cache@v2
     - name: Build
       run: cargo build --verbose
