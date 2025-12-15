@@ -97,6 +97,17 @@ impl Input {
             initial = initial | Input::D;
         }
 
+        // Clean up SOCD inputs
+        if initial.contains(Input::U) && initial.contains(Input::D) {
+            initial = initial ^ Input::U;
+            initial = initial ^ Input::D;
+        }
+
+        if initial.contains(Input::F) && initial.contains(Input::B) {
+            initial = initial ^ Input::F;
+            initial = initial ^ Input::B;
+        }
+
         initial
     }
 }
