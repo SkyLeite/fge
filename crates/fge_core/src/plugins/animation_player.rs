@@ -14,8 +14,13 @@ impl Plugin for AnimationPlayerPlugin {
         app.register_type::<components::AnimationPlayer>()
             .add_systems(
                 FixedUpdate,
-                systems::set_animation_frame.in_set(system_sets::Visual),
-            )
-            .add_systems(FixedUpdate, systems::set_sprite.in_set(system_sets::Visual));
+                (
+                    systems::set_animation_frame,
+                    systems::set_animation_from_state,
+                    systems::set_sprite,
+                )
+                    .chain()
+                    .in_set(system_sets::Visual),
+            );
     }
 }

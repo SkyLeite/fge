@@ -320,3 +320,40 @@ pub fn movement(
         }
     }
 }
+
+pub fn input_state_transition(
+    query: Query<(
+        &Character,
+        &mut CharacterState,
+        &InputHistory,
+        &mut AnimationPlayer,
+    )>,
+) {
+    for (character, mut character_state, input_history, mut animation_player) in query {
+        let mut new_state = None;
+        if let Some(state) = character.state(&character_state) {
+            // Check all cancelable states
+            for (state_id, cancel) in &state.cancels {
+                let state = character
+                    .0
+                    .states
+                    .get(state_id)
+                    .expect("Could not find cancelable state");
+
+                if let Some(input) = &state.input {
+                    if let Ok(input) = Input::try_from(input) {
+                        if input_history.just_pressed(input) {
+                            println!("Apply transition!");
+
+                            new_state = Some(fge_models::CharacterState::Custom(state_id.clone()));
+                        }
+                    }
+                }
+            }
+        }
+
+        if let Some(new_state) = new_state {
+            character_state.0 = new_state;
+        }
+    }
+}

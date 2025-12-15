@@ -14,6 +14,7 @@ impl Plugin for CharacterPlugin {
                 FixedUpdate,
                 (
                     systems::clear_hitboxes,
+                    systems::input_state_transition,
                     systems::movement,
                     systems::update_position,
                     systems::set_collision_boxes,
@@ -37,3 +38,17 @@ pub struct CharacterBundle {
 #[derive(Component, Reflect)]
 #[require(Position, RigidBody::Dynamic, Transform, GravityScale, InputHistory)]
 pub struct Character(#[allow(unused)] fge_models::Character);
+
+impl Character {
+    pub fn state(
+        &self,
+        character_state: &fge_models::CharacterState,
+    ) -> Option<&fge_models::State> {
+        match character_state {
+            fge_models::CharacterState::Standing => self.0.states.get(&"standing".into()),
+            fge_models::CharacterState::Crouching => self.0.states.get(&"crouching".into()),
+            fge_models::CharacterState::Airborne => self.0.states.get(&"airborne".into()),
+            fge_models::CharacterState::Custom(state_id) => self.0.states.get(&state_id),
+        }
+    }
+}

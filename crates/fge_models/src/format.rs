@@ -62,6 +62,9 @@ pub struct State {
 
     /// States in which this state can be canceled into
     pub cancels: HashMap<StateID, Cancel>,
+
+    /// Player input used to transition to this state
+    pub input: Option<String>,
 }
 
 #[derive(Reflect, Clone, Serialize, Deserialize)]
@@ -164,6 +167,17 @@ pub enum CharacterState {
     Crouching,
     Airborne,
     Custom(StateID),
+}
+
+impl ToString for CharacterState {
+    fn to_string(&self) -> String {
+        match self {
+            CharacterState::Standing => "standing".to_owned(),
+            CharacterState::Crouching => "crouching".to_owned(),
+            CharacterState::Airborne => "airborne".to_owned(),
+            CharacterState::Custom(state_id) => state_id.to_string(),
+        }
+    }
 }
 
 #[derive(Reflect, Clone, Serialize, Deserialize)]

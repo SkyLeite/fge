@@ -21,6 +21,18 @@ pub fn set_animation_frame(
     }
 }
 
+pub fn set_animation_from_state(
+    query: Query<
+        (&mut super::components::AnimationPlayer, &CharacterState),
+        Changed<CharacterState>,
+    >,
+) {
+    for (mut animation_player, state) in query {
+        let animation_id = state.0.to_string();
+        animation_player.set_animation(animation_id.into());
+    }
+}
+
 pub fn set_sprite(query: Query<(&super::components::AnimationPlayer, &mut Sprite)>) {
     for (animation_player, mut sprite) in query {
         let sequence = animation_player.current_sequence();

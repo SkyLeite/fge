@@ -75,6 +75,18 @@ pub enum Input {
 
     /// Back (4)
     B,
+
+    /// Attack 1
+    A1,
+
+    /// Attack 2
+    A2,
+
+    /// Attack 3
+    A3,
+
+    /// Attack 4
+    A4,
 }
 
 impl Input {
@@ -97,6 +109,10 @@ impl Input {
             initial = initial | Input::D;
         }
 
+        if input.pressed(KeyCode::KeyA) {
+            initial = initial | Input::A1;
+        }
+
         // Clean up SOCD inputs
         if initial.contains(Input::U) && initial.contains(Input::D) {
             initial = initial ^ Input::U;
@@ -109,6 +125,32 @@ impl Input {
         }
 
         initial
+    }
+}
+
+impl TryFrom<&str> for Input {
+    type Error = Box<dyn std::error::Error>;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
+            "8" => Ok(Self::U),
+            "6" => Ok(Self::F),
+            "2" => Ok(Self::D),
+            "4" => Ok(Self::B),
+            "A" => Ok(Self::A1),
+            "B" => Ok(Self::A2),
+            "C" => Ok(Self::A3),
+            "D" => Ok(Self::A4),
+            _ => Err(Box::new(TextError::NoSuchFont)),
+        }
+    }
+}
+
+impl TryFrom<&String> for Input {
+    type Error = Box<dyn std::error::Error>;
+
+    fn try_from(value: &String) -> std::result::Result<Self, Self::Error> {
+        Self::try_from(value.as_str())
     }
 }
 

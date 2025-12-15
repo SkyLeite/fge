@@ -21,7 +21,6 @@ return {
                 }
             },
             cancels = {
-                pre_walk_forward = {},
                 c5a = {},
             }
         },
@@ -43,9 +42,8 @@ return {
                     },
                 },
             },
-            cancels = {
-                attack_medium = {}
-            }
+            input = "A",
+            cancels = {}
         },
     },
     animations = {
