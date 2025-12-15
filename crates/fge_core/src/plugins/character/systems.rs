@@ -252,49 +252,30 @@ pub fn set_animation_cmd(
 
 pub fn set_state_cmd(
     (In(context), InRef(character_state)): (In<ActionContext>, InRef<fge_models::CharacterState>),
-    character_query: Query<
-        (
-            Entity,
-            &mut CharacterState,
-            &mut crate::plugins::animation_player::components::AnimationPlayer,
-        ),
-        With<Character>,
-    >,
+    character_query: Query<(Entity, &mut CharacterState), With<Character>>,
 ) {
     // println!("Running set_animation_cmd");
-    for (character, mut state, mut animation_player) in character_query {
+    for (character, mut state) in character_query {
         if character != context.character_entity {
             continue;
         }
 
         // Set the new state
         state.0 = character_state.clone();
-
-        // Set the matching animation, if any
-        let animation_id: AnimationID = match character_state {
-            fge_models::CharacterState::Standing => "standing".into(),
-            fge_models::CharacterState::Crouching => "crouching".into(),
-            fge_models::CharacterState::Airborne => "airborne".into(),
-            fge_models::CharacterState::Custom(state_id) => state_id.to_string().into(),
-        };
-
-        if animation_player.animations.contains_key(&animation_id) {
-            animation_player.set_animation(animation_id);
-        }
     }
 }
 
 pub fn movement(
     query: Query<(
         &Character,
+        &mut CharacterState,
         &mut Transform,
         &InputHistory,
-        &mut AnimationPlayer,
     )>,
 ) {
-    for (_character, mut transform, input_history, mut animation_player) in query {
+    for (_character, mut character_state, mut transform, input_history) in query {
         if input_history.just_pressed(Input::F) {
-            animation_player.set_animation("walk_forward".into());
+            character_state.0 = fge_models::CharacterState::Custom("walk_forward".into());
             transform.translation.x += 3.0;
         }
 
@@ -303,7 +284,7 @@ pub fn movement(
         }
 
         if input_history.just_pressed(Input::B) {
-            animation_player.set_animation("walk_backward".into());
+            character_state.0 = fge_models::CharacterState::Custom("walk_backward".into());
             transform.translation.x -= 3.0;
             continue;
         }
@@ -314,22 +295,15 @@ pub fn movement(
         }
 
         if input_history.just_released(Input::F) || input_history.just_released(Input::B) {
-            animation_player.set_animation("standing".into());
+            character_state.0 = fge_models::CharacterState::Custom("standing".into());
             transform.translation.x -= 3.0;
             continue;
         }
     }
 }
 
-pub fn input_state_transition(
-    query: Query<(
-        &Character,
-        &mut CharacterState,
-        &InputHistory,
-        &mut AnimationPlayer,
-    )>,
-) {
-    for (character, mut character_state, input_history, mut animation_player) in query {
+pub fn input_state_transition(query: Query<(&Character, &mut CharacterState, &InputHistory)>) {
+    for (character, mut character_state, input_history) in query {
         let mut new_state = None;
         if let Some(state) = character.state(&character_state) {
             // Check all cancelable states
@@ -343,8 +317,6 @@ pub fn input_state_transition(
                 if let Some(input) = &state.input {
                     if let Ok(input) = Input::try_from(input) {
                         if input_history.just_pressed(input) {
-                            println!("Apply transition!");
-
                             new_state = Some(fge_models::CharacterState::Custom(state_id.clone()));
                         }
                     }
