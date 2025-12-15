@@ -67,6 +67,14 @@ pub struct State {
     pub input: Option<String>,
 }
 
+#[derive(Reflect, Default, Copy, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Repetition {
+    #[default]
+    None,
+    Loop,
+}
+
 #[derive(Reflect, Clone, Serialize, Deserialize)]
 pub struct Condition(String);
 
@@ -221,6 +229,10 @@ pub struct SpriteAnimation {
 
     /// Default collision box to use for all Frames. This can be overriden per-frame.
     pub default_collision_box: Option<Square>,
+
+    #[serde(default)]
+    /// Whether and how to repeat the current animation after it ends
+    pub repetition: Repetition,
 }
 
 #[derive(Reflect, Clone, Serialize, Deserialize)]

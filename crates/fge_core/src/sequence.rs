@@ -1,10 +1,11 @@
 use bevy::prelude::*;
-use fge_models::{Frame, Square};
+use fge_models::{Frame, Repetition, Square};
 
 #[derive(Reflect)]
 pub struct Sequence {
     pub default_collision_box: Option<Square>,
     pub frames: Vec<Frame>,
+    pub repetition: Repetition,
 }
 
 impl Sequence {

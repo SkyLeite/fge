@@ -5,15 +5,20 @@ pub fn set_animation_frame(
     query: Query<(
         &mut super::components::AnimationPlayer,
         &mut super::AnimationTimer,
+        &mut CharacterState,
     )>,
 ) {
-    for (mut animation_player, mut timer) in query {
+    for (mut animation_player, mut timer, mut character_state) in query {
         timer.tick(time.delta());
 
         if timer.just_finished() {
             let sequence = animation_player.current_sequence();
             if animation_player.animation_frame == sequence.duration() {
-                animation_player.animation_frame = 1;
+                // Animation ended
+                match sequence.repetition {
+                    fge_models::Repetition::None => character_state.0 = Default::default(),
+                    fge_models::Repetition::Loop => animation_player.animation_frame = 1,
+                }
             } else {
                 animation_player.animation_frame += 1;
             }

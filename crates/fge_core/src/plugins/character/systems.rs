@@ -51,6 +51,7 @@ pub fn spawn(
                 let sequence = Sequence {
                     default_collision_box: sprite_animation.default_collision_box.clone(),
                     frames: sprite_animation.frames.clone(),
+                    repetition: sprite_animation.repetition,
                 };
 
                 animation_atlas.insert(id.clone(), sequence);

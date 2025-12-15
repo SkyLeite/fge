@@ -49,6 +49,7 @@ return {
     animations = {
         standing = {
             Sprite = {
+                repetition = "loop",
                 default_collision_box = {
                     x = 0,
                     y = -35,
@@ -104,6 +105,7 @@ return {
         },
         walk_forward = {
             Sprite = {
+                repetition = "loop",
                 default_collision_box = {
                     x = 0,
                     y = -35,
@@ -128,6 +130,7 @@ return {
         },
         walk_backward = {
             Sprite = {
+                repetition = "loop",
                 default_collision_box = {
                     x = 0,
                     y = -35,
