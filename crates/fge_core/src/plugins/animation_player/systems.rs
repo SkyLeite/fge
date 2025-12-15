@@ -28,7 +28,12 @@ pub fn set_sprite(query: Query<(&super::components::AnimationPlayer, &mut Sprite
             .get_frame(animation_player.animation_frame)
             .unwrap();
 
-        let spritesheet = animation_player.spritesheets.get(&frame.sheet).unwrap();
+        let sheet = frame
+            .sheet
+            .clone()
+            .unwrap_or(animation_player.active_animation_id.to_string().into());
+
+        let spritesheet = animation_player.spritesheets.get(&sheet).unwrap();
 
         sprite.image = spritesheet.image.clone();
         sprite.texture_atlas = Some(TextureAtlas {

@@ -227,8 +227,8 @@ pub struct Square {
 
 #[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Frame {
-    /// ID of the spritesheet to use for this frame.
-    pub sheet: SpritesheetID,
+    /// ID of the spritesheet to use for this frame. If omitted, defaults to the animation's name
+    pub sheet: Option<SpritesheetID>,
 
     /// Index of the sprite in the spritesheet
     pub cell: (u16, u16),
