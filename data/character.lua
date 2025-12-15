@@ -4,7 +4,7 @@ return {
     max_health = 2000,
     spritesheets = {
         standing = { file = "akiha_idle.png", columns = 12, rows = 1, width = 3072, height = 256 },
-        c5a = { file = "akiha_c5a.png", columns = 6, rows = 1, width = 672, height = 112 },
+        c5a = { file = "akiha_c5a.png", columns = 6, rows = 1, width = 1536, height = 256 },
         walk_forward = { file = "akiha_walk_forward.png", columns = 13, rows = 1, width = 3328, height = 256 },
         walk_backward = { file = "akiha_walk_backward.png", columns = 13, rows = 1, width = 3328, height = 256 },
     },
