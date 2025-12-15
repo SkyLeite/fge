@@ -294,18 +294,22 @@ pub fn movement(
 ) {
     for (_character, mut transform, input_history, mut animation_player) in query {
         if input_history.just_pressed(Input::F) {
-            println!("Pressed!");
             animation_player.set_animation("walk_forward".into());
             transform.translation.x += 3.0;
         }
 
-        if input_history.just_released(Input::F) {
+        if input_history.pressed(Input::F) {
+            transform.translation.x += 3.0;
+        }
+
+        if input_history.just_released(Input::F) || input_history.just_released(Input::B) {
             animation_player.set_animation("standing".into());
             transform.translation.x -= 3.0;
         }
 
-        if input_history.pressed(Input::F) {
-            transform.translation.x += 3.0;
+        if input_history.just_pressed(Input::B) {
+            animation_player.set_animation("walk_backward".into());
+            transform.translation.x -= 3.0;
         }
 
         if input_history.pressed(Input::B) {
