@@ -113,6 +113,18 @@ impl Input {
             initial = initial | Input::A1;
         }
 
+        if input.pressed(KeyCode::KeyS) {
+            initial = initial | Input::A2;
+        }
+
+        if input.pressed(KeyCode::KeyD) {
+            initial = initial | Input::A3;
+        }
+
+        if input.pressed(KeyCode::KeyF) {
+            initial = initial | Input::A4;
+        }
+
         // Clean up SOCD inputs
         if initial.contains(Input::U) && initial.contains(Input::D) {
             initial = initial ^ Input::U;
