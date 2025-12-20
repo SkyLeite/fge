@@ -1,5 +1,6 @@
 #![allow(clippy::type_complexity)]
 
+use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
@@ -20,15 +21,17 @@ fn main() {
         .add_plugins(CharacterPlugin)
         .add_plugins(PhysicsPlugin)
         .add_plugins(InputPlugin)
+        .add_plugins(DebugPlugin)
         .add_plugins(EguiPlugin::default())
         .add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(FrameTimeDiagnosticsPlugin::default())
         .add_systems(Startup, setup)
         .configure_sets(
             FixedUpdate,
             (
                 system_sets::Input,
-                system_sets::Visual,
                 system_sets::Gameplay,
+                system_sets::Visual,
             )
                 .chain(),
         )

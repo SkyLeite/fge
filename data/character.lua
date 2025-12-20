@@ -10,6 +10,18 @@ return {
         walk_backward = { file = "akiha_walk_backward.png", columns = 13, rows = 1, width = 3328, height = 256 },
     },
     states = {
+        grounded_neutral = {
+            commands = {},
+            cancels = {},
+            on = {
+                enter = {
+                    transitions = {
+                        { to = "walk_forward",  when = { kind = "hold", inputs = "6" } },
+                        { to = "walk_backward", when = { kind = "hold", inputs = "4" } },
+                    }
+                }
+            }
+        },
         standing = {
             commands = {
                 {
@@ -22,6 +34,8 @@ return {
                 }
             },
             cancels = {
+                walk_forward = {},
+                walk_backward = {},
                 c5a = {},
                 c5b1 = {},
             }
@@ -31,14 +45,23 @@ return {
             cancels = {
                 c5a = {},
                 c5b1 = {},
-            }
+                walk_backward = {},
+            },
+            -- on = {
+            --     ["exit"] = {
+            --         transitions = {
+            --             { to = "grounded_neutral" }
+            --         }
+            --     }
+            -- }
         },
         walk_backward = {
             commands = {},
             cancels = {
                 c5a = {},
                 c5b1 = {},
-            }
+                walk_forward = {},
+            },
         },
         c5a = {
             commands = {
@@ -50,7 +73,15 @@ return {
                     },
                 },
             },
-            input = "A",
+            input = {
+                step_sets = {
+                    {
+                        steps = {
+                            { kind = "press", inputs = "A" },
+                        }
+                    },
+                }
+            },
             cancels = {}
         },
         c5b1 = {
@@ -63,7 +94,15 @@ return {
                     },
                 },
             },
-            input = "B",
+            input = {
+                step_sets = {
+                    {
+                        steps = {
+                            { kind = "press", inputs = "B" },
+                        }
+                    },
+                }
+            },
             cancels = {}
         },
     },

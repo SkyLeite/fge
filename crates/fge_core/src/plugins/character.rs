@@ -15,7 +15,6 @@ impl Plugin for CharacterPlugin {
                 (
                     systems::clear_hitboxes,
                     systems::input_state_transition,
-                    systems::movement,
                     systems::update_position,
                     systems::set_collision_boxes,
                     systems::run_state_commands,

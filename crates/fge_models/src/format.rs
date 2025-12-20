@@ -1,6 +1,8 @@
 use std::{collections::HashMap, fmt::Display, hash::Hash, ops::Deref, path::PathBuf};
 
+pub use crate::step_set::StepSet;
 use bevy_reflect::Reflect;
+use fge_input::Inputs;
 use serde::{Deserialize, Serialize};
 
 #[derive(Reflect, Serialize, Deserialize)]
@@ -55,7 +57,7 @@ pub struct Author {
     pub email: String,
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 pub struct State {
     /// A list of commands to be executed every frame when the character is in this state.
     pub commands: Vec<Command>,
@@ -64,7 +66,28 @@ pub struct State {
     pub cancels: HashMap<StateID, Cancel>,
 
     /// Player input used to transition to this state
-    pub input: Option<String>,
+    #[reflect(ignore)]
+    pub input: Option<InputSpec>,
+}
+
+/// Specification for a move's input
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct InputSpec {
+    pub step_sets: Vec<StepSet>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum Step {
+    Press {
+        inputs: Inputs,
+    },
+    Hold {
+        inputs: Inputs,
+
+        /// Amount of frames the input needs to be held for
+        min_frames: u16,
+    },
 }
 
 #[derive(Reflect, Default, Copy, Clone, Serialize, Deserialize)]
@@ -75,7 +98,7 @@ pub enum Repetition {
     Loop,
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 pub struct Condition(String);
 
 impl Deref for Condition {
@@ -86,7 +109,7 @@ impl Deref for Condition {
     }
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 pub struct Cancel {
     /// Frame range in which this cancel window is valid. If omitted, the cancel window is always valid
     pub frames: Option<NumberOrRange>,
@@ -152,7 +175,7 @@ impl From<String> for SpritesheetID {
     }
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 pub enum Action {
     /// Sets a new character state. If there's an animation with the same name as the state, it is also set
     SetState(CharacterState),
@@ -167,7 +190,7 @@ pub enum Action {
     SetHitboxes(Vec<Square>),
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize, Default)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize, Default, Eq, PartialEq)]
 #[serde(untagged)]
 pub enum CharacterState {
     #[default]
@@ -188,7 +211,7 @@ impl ToString for CharacterState {
     }
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 pub struct Command {
     /// Action to run when this Command is executed
     pub action: Action,
@@ -200,7 +223,7 @@ pub struct Command {
     pub frames: Option<NumberOrRange>,
 }
 
-#[derive(Reflect, Clone, Copy, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum NumberOrRange {
     Number(u32),
@@ -209,7 +232,7 @@ pub enum NumberOrRange {
 
 /// A (half-open) range bounded inclusively below and exclusively above (from..to).
 /// The range from..to contains all values with from <= x < to. It is empty if from >= to.
-#[derive(Reflect, Copy, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Copy, Clone, Serialize, Deserialize)]
 pub struct Range {
     pub from: u32,
     pub to: u32,
@@ -235,7 +258,7 @@ pub struct SpriteAnimation {
     pub repetition: Repetition,
 }
 
-#[derive(Reflect, Clone, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 /// A generic Box, used to represent collision, hit and hurtboxes.
 pub struct Square {
     /// X position of the center point

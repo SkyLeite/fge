@@ -1,4 +1,4 @@
-use crate::plugins::input::{Input, InputHistory};
+use crate::plugins::input::InputHistory;
 use crate::prelude::*;
 use crate::sequence::Sequence;
 use crate::{
@@ -6,7 +6,8 @@ use crate::{
 };
 use bevy::ecs::system::RunSystemOnce;
 use bevy_rapier2d::prelude::*;
-use fge_models::{AnimationID, Square};
+use fge_input::Inputs;
+use fge_models::{AnimationID, InputSpec, Square, Step};
 use std::path::Path;
 
 use super::{Character, CharacterBundle};
@@ -266,67 +267,26 @@ pub fn set_state_cmd(
     }
 }
 
-pub fn movement(
-    query: Query<(
-        &Character,
-        &mut CharacterState,
-        &mut Transform,
-        &InputHistory,
-    )>,
-) {
-    for (_character, mut character_state, mut transform, input_history) in query {
-        if input_history.just_pressed(Input::F) {
-            character_state.0 = fge_models::CharacterState::Custom("walk_forward".into());
-            transform.translation.x += 3.0;
-        }
-
-        if input_history.pressed(Input::F) {
-            transform.translation.x += 3.0;
-        }
-
-        if input_history.just_pressed(Input::B) {
-            character_state.0 = fge_models::CharacterState::Custom("walk_backward".into());
-            transform.translation.x -= 3.0;
-            continue;
-        }
-
-        if input_history.pressed(Input::B) {
-            transform.translation.x -= 3.0;
-            continue;
-        }
-
-        if input_history.just_released(Input::F) || input_history.just_released(Input::B) {
-            character_state.0 = fge_models::CharacterState::Custom("standing".into());
-            transform.translation.x -= 3.0;
-            continue;
-        }
-    }
-}
-
 pub fn input_state_transition(query: Query<(&Character, &mut CharacterState, &InputHistory)>) {
     for (character, mut character_state, input_history) in query {
-        let mut new_state = None;
-        if let Some(state) = character.state(&character_state) {
-            // Check all cancelable states
-            for (state_id, cancel) in &state.cancels {
-                let state = character
-                    .0
-                    .states
-                    .get(state_id)
-                    .expect("Could not find cancelable state");
+        let state = character.state(&character_state).unwrap();
+        let cancelable_states = state
+            .cancels
+            .iter()
+            .filter_map(|(s, _)| {
+                character
+                    .state(&fge_models::CharacterState::Custom(s.clone()))
+                    .and_then(|f| f.input.as_ref().map(|a| (s, f, a)))
+            })
+            .collect::<Vec<_>>();
 
-                if let Some(input) = &state.input {
-                    if let Ok(input) = Input::try_from(input) {
-                        if input_history.just_pressed(input) {
-                            new_state = Some(fge_models::CharacterState::Custom(state_id.clone()));
-                        }
-                    }
+        for (state_id, state, spec) in cancelable_states {
+            for step_set in &spec.step_sets {
+                let matches = input_history.matches(step_set, step_set.buffer_window_size as usize);
+                if matches {
+                    character_state.0 = fge_models::CharacterState::Custom(state_id.clone());
                 }
             }
-        }
-
-        if let Some(new_state) = new_state {
-            character_state.0 = new_state;
         }
     }
 }

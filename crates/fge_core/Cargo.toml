@@ -4,11 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = { version = "0.17.2", features = ["dynamic_linking"] }
+bevy = { workspace = true }
+itertools = { workspace = true }
 bevy-inspector-egui = "0.35.0"
 bevy_rapier2d = { git = "https://github.com/Deniskore/bevy_rapier.git", branch = "bevy-0.17" }
-enumflags2 = "0.7.12"
 fge_models = { path = "../fge_models" }
+fge_input = { path = "../fge_input" }
 ringbuffer = "0.16.0"
 
 [dev-dependencies]

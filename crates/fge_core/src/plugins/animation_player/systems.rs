@@ -1,3 +1,5 @@
+use fge_models::AnimationID;
+
 use crate::prelude::*;
 
 pub fn set_animation_frame(
@@ -33,8 +35,10 @@ pub fn set_animation_from_state(
     >,
 ) {
     for (mut animation_player, state) in query {
-        let animation_id = state.0.to_string();
-        animation_player.set_animation(animation_id.into());
+        let new_animation_id: AnimationID = state.0.to_string().into();
+        if animation_player.active_animation_id != new_animation_id {
+            animation_player.set_animation(new_animation_id.into());
+        }
     }
 }
 
