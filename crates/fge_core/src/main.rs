@@ -47,5 +47,7 @@ fn setup(mut commands: Commands) {
     let game = fge_models::serde::from_file(Path::new("./data/game.lua")).unwrap();
     commands.spawn(components::CharacterList(game.characters));
 
-    commands.queue(character::commands::SpawnCharacter(CharacterID("akiha".into())));
+    commands.queue(character::commands::SpawnCharacter(CharacterID(
+        "akiha".into(),
+    )));
 }

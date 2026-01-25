@@ -1,8 +1,8 @@
 use crate::{plugins::input::InputHistory, prelude::*};
 use bevy_rapier2d::prelude::*;
 
-mod systems;
 pub mod commands;
+mod systems;
 
 pub struct CharacterPlugin;
 

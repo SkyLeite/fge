@@ -18,12 +18,7 @@ impl Plugin for DebugPlugin {
 
 fn debug_system(
     mut contexts: EguiContexts,
-    query: Query<(
-        Entity,
-        &Character,
-        &InputHistory,
-        &Transform,
-    )>,
+    query: Query<(Entity, &Character, &InputHistory, &Transform)>,
 ) -> Result {
     egui::Window::new("Debug").show(contexts.ctx_mut()?, |ui| {
         for (entity, _character, input_history, transform) in query {

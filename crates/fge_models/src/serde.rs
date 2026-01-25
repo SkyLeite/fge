@@ -1,6 +1,6 @@
 use mlua::{Lua, LuaSerdeExt, Table};
 
-use crate::{Game};
+use crate::Game;
 
 pub fn from_str(lua: &Lua, data: &str) -> Result<Game, Box<dyn std::error::Error>> {
     let val = lua.load(data).eval()?;
@@ -24,7 +24,8 @@ pub fn from_file(path: &std::path::Path) -> Result<Game, Box<dyn std::error::Err
         "./?",
         &format!("{}/?.lua", base_game_folder_str),
         &format!("{}/?/init.lua", base_game_folder_str),
-    ].join(";");
+    ]
+    .join(";");
 
     let lua = Lua::new();
     let globals = lua.globals();

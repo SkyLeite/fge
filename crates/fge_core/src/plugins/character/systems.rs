@@ -17,8 +17,13 @@ pub fn spawn(
     assets: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let character_list = query.single().expect("Attempted to spawn a character without a CharacterList");
-    let character = character_list.0.get(&character_id).expect("Character not found in CharacterList");
+    let character_list = query
+        .single()
+        .expect("Attempted to spawn a character without a CharacterList");
+    let character = character_list
+        .0
+        .get(&character_id)
+        .expect("Character not found in CharacterList");
 
     // Load spritesheets
     let mut spritesheets = Spritesheets::default();

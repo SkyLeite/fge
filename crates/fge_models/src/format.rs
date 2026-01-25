@@ -16,7 +16,7 @@ pub struct Game {
     pub slug: String,
 
     /// The list of available characters
-    pub characters: HashMap<CharacterID, Character>
+    pub characters: HashMap<CharacterID, Character>,
 }
 
 #[derive(Reflect, Serialize, Deserialize, Clone)]

@@ -6,6 +6,8 @@ pub struct SpawnCharacter(pub CharacterID);
 
 impl Command for SpawnCharacter {
     fn apply(self, world: &mut World) {
-        world.run_system_once_with(super::systems::spawn, self.0).expect("Failed to spawn character");
+        world
+            .run_system_once_with(super::systems::spawn, self.0)
+            .expect("Failed to spawn character");
     }
 }
