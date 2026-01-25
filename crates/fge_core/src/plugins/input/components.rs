@@ -6,7 +6,7 @@ use crate::prelude::*;
 
 #[derive(Component)]
 pub struct InputHistory {
-    pub history: ConstGenericRingBuffer<Inputs, 60>,
+    pub history: ConstGenericRingBuffer<Inputs, 999>,
 }
 
 impl std::fmt::Debug for InputHistory {
@@ -106,6 +106,21 @@ impl InputHistory {
     /// Returns whether the sequence is contained anywhere in the history
     pub fn contains() -> bool {
         todo!("Implement InputHistory::contains");
+    }
+
+    /// Returns a condensed version of the input history, where each entry is a tuple of inputs and the amount of frames it was held for
+    pub fn condensed(&self) -> Vec<(&Inputs, i32)> {
+        self.history.iter().rev().fold(Vec::new(), |mut acc, x| {
+            if let Some(last) = &mut acc.last_mut()
+                && last.0 == x
+            {
+                last.1 += 1;
+            } else {
+                acc.push((x, 1));
+            }
+
+            acc
+        })
     }
 }
 

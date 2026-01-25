@@ -119,6 +119,7 @@ pub struct Cancel {
 }
 
 #[derive(Reflect, Clone, Debug, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[reflect(Hash)]
 pub struct StateID(String);
 
 impl Display for StateID {
