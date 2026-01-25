@@ -1,5 +1,3 @@
-use std::fmt::format;
-
 use mlua::{Lua, LuaSerdeExt, Table};
 
 use crate::{Game};
@@ -21,14 +19,14 @@ pub fn from_file(path: &std::path::Path) -> Result<Game, Box<dyn std::error::Err
     let base_game_folder_str = base_game_folder.to_string_lossy();
     let lua_str = std::fs::read_to_string(path)?;
 
-    let searchpath = vec![
+    let searchpath = [
         "./?.lua",
         "./?",
         &format!("{}/?.lua", base_game_folder_str),
         &format!("{}/?/init.lua", base_game_folder_str),
     ].join(";");
 
-    let mut lua = Lua::new();
+    let lua = Lua::new();
     let globals = lua.globals();
     let package = globals.get::<Table>("package").unwrap();
     package.set("path", searchpath).unwrap();
@@ -37,7 +35,7 @@ pub fn from_file(path: &std::path::Path) -> Result<Game, Box<dyn std::error::Err
 
     lua.set_globals(globals).unwrap();
 
-    from_str(&mut lua, &lua_str)
+    from_str(&lua, &lua_str)
 }
 
 #[cfg(test)]
