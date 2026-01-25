@@ -1,12 +1,11 @@
 #![allow(clippy::type_complexity)]
 
-use std::path::Path;
-
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
 mod action_context;
+mod args;
 mod components;
 mod plugins;
 mod prelude;
@@ -16,9 +15,15 @@ pub mod system_sets;
 use fge_models::CharacterID;
 use plugins::*;
 
+use crate::args::Args;
+
 fn main() {
-    App::new()
-        .register_type::<components::Position>()
+    let mut app = App::new();
+
+    let args = Args::from_env();
+    app.insert_resource(args);
+
+    app.register_type::<components::Position>()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins(AnimationPlayerPlugin)
         .add_plugins(CharacterPlugin)
@@ -41,10 +46,10 @@ fn main() {
         .run();
 }
 
-fn setup(mut commands: Commands) {
+fn setup(mut commands: Commands, args: Res<Args>) {
     commands.spawn(Camera2d);
 
-    let game = fge_models::serde::from_file(Path::new("./data/game.lua")).unwrap();
+    let game = fge_models::serde::from_file(&args.game_path.join("game.lua")).unwrap();
     commands.spawn(components::CharacterList(game.characters));
 
     commands.queue(character::commands::SpawnCharacter(CharacterID(
