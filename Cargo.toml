@@ -3,7 +3,8 @@ resolver = "3"
 members = ["crates/fge_models", "crates/fge_core", "crates/fge_input"]
 
 [workspace.dependencies]
-bevy = { version = "0.17.2", features = ["dynamic_linking"] }
+bevy = { version = "0.18.0", features = ["2d", "dynamic_linking"] }
+bevy_reflect = "0.18.0"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_with = { version = "3.16.1" }
 itertools = { version = "0.14.0" }
