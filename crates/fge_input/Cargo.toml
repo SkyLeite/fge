@@ -1,0 +1,10 @@
+[package]
+name = "fge_input"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+enumflags2 = { version = "0.7.12", features = ["serde"] }
+bevy = { workspace = true }
+serde = { workspace = true }
+serde_with = { workspace = true }
