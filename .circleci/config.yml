@@ -1,0 +1,33 @@
+version: 2.1
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build
+
+jobs:
+  build:
+    docker:
+      - image: nixpkgs/nix-flakes:nixos-25.11-x86_64-linux
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - &rust-cache fge-cache-{{ arch }}-{{ checksum "Cargo.toml" }}
+            - fge-cache-
+      - run: 
+          name: Run tests
+          command: nix develop --extra-experimental-features nix-command --command bash -c "cargo test"
+      - run: 
+          name: Run clippy
+          command: nix develop --extra-experimental-features nix-command --command bash -c "cargo clippy"
+      - save_cache:
+          key: *rust-cache 
+          paths:
+            - ~/.cargo/bin/
+            - ~/.cargo/registry/index/
+            - ~/.cargo/registry/cache/
+            - ~/.cargo/git/db/
+            - target/
