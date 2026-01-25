@@ -47,7 +47,7 @@ impl Character {
             fge_models::CharacterState::Standing => self.0.states.get(&"standing".into()),
             fge_models::CharacterState::Crouching => self.0.states.get(&"crouching".into()),
             fge_models::CharacterState::Airborne => self.0.states.get(&"airborne".into()),
-            fge_models::CharacterState::Custom(state_id) => self.0.states.get(&state_id),
+            fge_models::CharacterState::Custom(state_id) => self.0.states.get(state_id),
         }
     }
 }

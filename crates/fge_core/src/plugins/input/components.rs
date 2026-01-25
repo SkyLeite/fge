@@ -93,11 +93,9 @@ impl InputHistory {
         let mut sequence_iter = sequence.into_iter().rev();
 
         // All entries in input history exist in the sequence
-        let all_matches = window
+        let all_matches = !window
             .zip(sequence_iter.by_ref())
-            .filter(|(i, j)| !i.contains(***j))
-            .next()
-            .is_none();
+            .any(|(i, j)| !i.contains(**j));
 
         // Are there any elements in sequence_iter that didn't match the input history?
         sequence_iter.next().is_none() && all_matches

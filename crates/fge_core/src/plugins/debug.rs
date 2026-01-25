@@ -37,7 +37,7 @@ fn debug_system(
                     ui.vertical(|ui| {
                         let history = input_history.condensed().into_iter().take(16);
                         for (input, count) in history {
-                            let input_str = format!("{} {}", input.to_string(), count);
+                            let input_str = format!("{} {}", **input, count);
                             let label = egui::widgets::Label::new(input_str);
 
                             ui.add(label);

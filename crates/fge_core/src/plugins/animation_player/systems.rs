@@ -37,7 +37,7 @@ pub fn set_animation_from_state(
     for (mut animation_player, state) in query {
         let new_animation_id: AnimationID = state.0.to_string().into();
         if animation_player.active_animation_id != new_animation_id {
-            animation_player.set_animation(new_animation_id.into());
+            animation_player.set_animation(new_animation_id);
         }
     }
 }

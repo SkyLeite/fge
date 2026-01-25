@@ -201,14 +201,16 @@ pub enum CharacterState {
     Custom(StateID),
 }
 
-impl ToString for CharacterState {
-    fn to_string(&self) -> String {
-        match self {
-            CharacterState::Standing => "standing".to_owned(),
-            CharacterState::Crouching => "crouching".to_owned(),
-            CharacterState::Airborne => "airborne".to_owned(),
-            CharacterState::Custom(state_id) => state_id.to_string(),
-        }
+impl Display for CharacterState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let s = match self {
+            CharacterState::Standing => "standing",
+            CharacterState::Crouching => "crouching",
+            CharacterState::Airborne => "airborne",
+            CharacterState::Custom(state_id) => &state_id.to_string(),
+        };
+
+        f.write_str(s)
     }
 }
 

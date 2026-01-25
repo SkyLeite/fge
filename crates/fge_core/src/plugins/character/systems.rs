@@ -6,8 +6,7 @@ use crate::{
 };
 use bevy::ecs::system::RunSystemOnce;
 use bevy_rapier2d::prelude::*;
-use fge_input::Inputs;
-use fge_models::{AnimationID, InputSpec, Square, Step};
+use fge_models::{AnimationID, Square};
 use std::path::Path;
 
 use super::{Character, CharacterBundle};
@@ -197,7 +196,7 @@ pub fn clear_hitboxes(
             let hitboxes = hitboxes_query.get(*child);
 
             if hitboxes.is_ok() {
-                commands.entity(character).remove_child(*child);
+                commands.entity(character).detach_child(*child);
                 commands.entity(*child).despawn();
             }
         }
@@ -280,7 +279,7 @@ pub fn input_state_transition(query: Query<(&Character, &mut CharacterState, &In
             })
             .collect::<Vec<_>>();
 
-        for (state_id, state, spec) in cancelable_states {
+        for (state_id, _state, spec) in cancelable_states {
             for step_set in &spec.step_sets {
                 let matches = input_history.matches(step_set, step_set.buffer_window_size as usize);
                 if matches {
