@@ -6,6 +6,20 @@ use fge_input::Inputs;
 use serde::{Deserialize, Serialize};
 
 #[derive(Reflect, Serialize, Deserialize)]
+pub struct Game {
+    /// The game's name.
+    /// Example: `Marvel vs. Capcom 3`
+    pub name: String,
+
+    /// A slug used to refer to the game in alphanumeric format.
+    /// Example: `mvc3`
+    pub slug: String,
+
+    /// The list of available characters
+    pub characters: HashMap<CharacterID, Character>
+}
+
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Character {
     /// A unique identifier for this character.
     /// Example: `mvc2cable`
@@ -30,7 +44,7 @@ pub struct Character {
     pub max_health: u32,
 }
 
-#[derive(Reflect, Debug, Serialize, Deserialize)]
+#[derive(Reflect, Debug, Serialize, Deserialize, Clone)]
 pub struct Spritesheet {
     /// Path to file containing the spritesheet
     pub file: PathBuf,
@@ -48,7 +62,7 @@ pub struct Spritesheet {
     pub height: u16,
 }
 
-#[derive(Reflect, Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct Author {
     /// The author's name
     pub name: String,
@@ -176,6 +190,21 @@ impl From<String> for SpritesheetID {
     }
 }
 
+#[derive(Reflect, Debug, Hash, PartialEq, Eq, Serialize, Deserialize, Clone)]
+pub struct CharacterID(pub String);
+
+impl From<&str> for CharacterID {
+    fn from(value: &str) -> Self {
+        Self(value.to_string())
+    }
+}
+
+impl From<String> for CharacterID {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
 #[derive(Reflect, Debug, Clone, Serialize, Deserialize)]
 pub enum Action {
     /// Sets a new character state. If there's an animation with the same name as the state, it is also set
@@ -241,7 +270,7 @@ pub struct Range {
     pub to: u32,
 }
 
-#[derive(Reflect, Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub enum Animation {
     Sprite(SpriteAnimation),
     Model(ModelAnimation),
@@ -296,5 +325,5 @@ pub struct Sprite {
 }
 
 /// An animation that uses a 3D model. Not currently implemented, and does nothing.
-#[derive(Reflect, Serialize, Deserialize)]
+#[derive(Reflect, Serialize, Deserialize, Clone)]
 pub struct ModelAnimation {}

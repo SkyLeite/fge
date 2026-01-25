@@ -1,31 +1,56 @@
-use mlua::{Lua, LuaSerdeExt};
+use std::fmt::format;
 
-use crate::Character;
+use mlua::{Lua, LuaSerdeExt, Table};
 
-pub fn from_str(data: &str) -> Result<Character, Box<dyn std::error::Error>> {
-    let lua = Lua::new();
+use crate::{Game};
 
+pub fn from_str(lua: &Lua, data: &str) -> Result<Game, Box<dyn std::error::Error>> {
     let val = lua.load(data).eval()?;
-    let character: Character = lua.from_value(val)?;
+    let game: Game = lua.from_value(val)?;
 
-    Ok(character)
+    Ok(game)
 }
 
-pub fn from_file(path: &std::path::Path) -> Result<Character, Box<dyn std::error::Error>> {
+pub fn from_file(path: &std::path::Path) -> Result<Game, Box<dyn std::error::Error>> {
+    let base_game_folder = if path.is_dir() {
+        path.canonicalize().unwrap()
+    } else {
+        path.parent().and_then(|f| f.canonicalize().ok()).unwrap()
+    };
+
+    let base_game_folder_str = base_game_folder.to_string_lossy();
     let lua_str = std::fs::read_to_string(path)?;
-    from_str(&lua_str)
+
+    let searchpath = vec![
+        "./?.lua",
+        "./?",
+        &format!("{}/?.lua", base_game_folder_str),
+        &format!("{}/?/init.lua", base_game_folder_str),
+    ].join(";");
+
+    let mut lua = Lua::new();
+    let globals = lua.globals();
+    let package = globals.get::<Table>("package").unwrap();
+    package.set("path", searchpath).unwrap();
+
+    globals.set("package", package).unwrap();
+
+    lua.set_globals(globals).unwrap();
+
+    from_str(&mut lua, &lua_str)
 }
 
 #[cfg(test)]
 mod test {
     use fixtures::fixtures;
 
+    use crate::CharacterID;
+
     #[fixtures(["basic.lua"])]
     #[test]
     pub fn basic(path: &std::path::Path) {
-        let character = super::from_file(path).unwrap();
+        let game = super::from_file(path).unwrap();
 
-        assert_eq!(character.id, "mbaccakiha");
-        assert_eq!(character.name, "Akiha");
+        assert!(game.characters.contains_key(&CharacterID("akiha".into())));
     }
 }

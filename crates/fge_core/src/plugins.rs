@@ -1,5 +1,5 @@
 mod animation_player;
-mod character;
+pub mod character;
 mod debug;
 mod input;
 mod physics;

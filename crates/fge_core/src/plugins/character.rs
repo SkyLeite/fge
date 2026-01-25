@@ -2,6 +2,7 @@ use crate::{plugins::input::InputHistory, prelude::*};
 use bevy_rapier2d::prelude::*;
 
 mod systems;
+pub mod commands;
 
 pub struct CharacterPlugin;
 
@@ -9,7 +10,6 @@ impl Plugin for CharacterPlugin {
     fn build(&self, app: &mut App) {
         app.register_type::<Character>()
             .register_type::<CharacterState>()
-            .add_systems(Startup, systems::spawn)
             .add_systems(
                 FixedUpdate,
                 (
@@ -36,7 +36,7 @@ pub struct CharacterBundle {
 
 #[derive(Component, Reflect)]
 #[require(Position, RigidBody::Dynamic, Transform, GravityScale, InputHistory)]
-pub struct Character(#[allow(unused)] fge_models::Character);
+pub struct Character(fge_models::Character);
 
 impl Character {
     pub fn state(

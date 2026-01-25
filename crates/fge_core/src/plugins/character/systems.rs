@@ -6,17 +6,19 @@ use crate::{
 };
 use bevy::ecs::system::RunSystemOnce;
 use bevy_rapier2d::prelude::*;
-use fge_models::{AnimationID, Square};
-use std::path::Path;
+use fge_models::{AnimationID, CharacterID, Square};
 
 use super::{Character, CharacterBundle};
 
 pub fn spawn(
+    In(character_id): In<CharacterID>,
+    query: Query<&CharacterList>,
     mut commands: Commands,
     assets: Res<AssetServer>,
     mut atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
-    let character = fge_models::serde::from_file(Path::new("./data/character.lua")).unwrap();
+    let character_list = query.single().expect("Attempted to spawn a character without a CharacterList");
+    let character = character_list.0.get(&character_id).expect("Character not found in CharacterList");
 
     // Load spritesheets
     let mut spritesheets = Spritesheets::default();
@@ -70,7 +72,7 @@ pub fn spawn(
             health: crate::components::Health(character.max_health),
             position: crate::components::Position::default(),
             animation_player,
-            character_data: Character(character),
+            character_data: Character(character.clone()),
             state: CharacterState::default(),
         })
         .with_child((

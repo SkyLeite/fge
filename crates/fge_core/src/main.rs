@@ -1,5 +1,7 @@
 #![allow(clippy::type_complexity)]
 
+use std::path::Path;
+
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::prelude::*;
 use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
@@ -11,6 +13,7 @@ mod prelude;
 mod sequence;
 pub mod system_sets;
 
+use fge_models::CharacterID;
 use plugins::*;
 
 fn main() {
@@ -40,4 +43,9 @@ fn main() {
 
 fn setup(mut commands: Commands) {
     commands.spawn(Camera2d);
+
+    let game = fge_models::serde::from_file(Path::new("./data/game.lua")).unwrap();
+    commands.spawn(components::CharacterList(game.characters));
+
+    commands.queue(character::commands::SpawnCharacter(CharacterID("akiha".into())));
 }
