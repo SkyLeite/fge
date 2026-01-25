@@ -31,3 +31,4 @@ jobs:
             - ~/.cargo/registry/cache/
             - ~/.cargo/git/db/
             - target/
+            - /nix/store
