@@ -15,7 +15,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - &rust-cache fge-cache-{{ arch }}-{{ checksum "Cargo.toml" }}
+            - &rust-cache fge-cache-{{ arch }}-{{ checksum "Cargo.toml" }}-{{ checksum "flake.lock" }}
             - fge-cache-
       - run: 
           name: Run tests
